@@ -15,6 +15,7 @@ func (app *application) internalServerError(w http.ResponseWriter, r *http.Reque
 func (app *application) badRequestResponse(w http.ResponseWriter, r *http.Request, err error) {
 	log.Warn("bad request errors:", "path", r.URL, "method", r.Method, "error", err.Error())
 
+	// TODO: format fields error validation
 	WriteJSONError(w, http.StatusBadRequest, &[]string{err.Error()})
 }
 

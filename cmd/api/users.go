@@ -7,9 +7,9 @@ import (
 )
 
 type CreateUserPayload struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Username string `json:"username" validate:"required"`
+	Email    string `json:"email" validate:"required,max=21,email"`
+	Password string `json:"password" validate:"required,max=12,withspace,validpassword"`
 }
 
 func (app *application) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -17,7 +17,11 @@ func (app *application) CreateUserHandler(w http.ResponseWriter, r *http.Request
 
 	err := readJSON(w, r, userPayload)
 	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
 
+	if err := Validate.Struct(userPayload); err != nil {
 		app.badRequestResponse(w, r, err)
 		return
 	}

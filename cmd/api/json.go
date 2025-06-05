@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
+	"unicode"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -12,6 +14,27 @@ var Validate *validator.Validate
 
 func init() {
 	Validate = validator.New(validator.WithRequiredStructEnabled())
+
+	Validate.RegisterValidation("withspace", func(fl validator.FieldLevel) bool {
+		return !strings.Contains(fl.Field().String(), " ")
+	})
+
+	Validate.RegisterValidation("validpassword", func(fl validator.FieldLevel) bool {
+		var hasUpper, hasDigit, hasSpecial bool
+
+		for _, ch := range fl.Field().String() {
+			switch {
+			case unicode.IsUpper(ch):
+				hasUpper = true
+			case unicode.IsDigit(ch):
+				hasDigit = true
+			case unicode.IsPunct(ch) || unicode.IsSymbol(ch):
+				hasSpecial = true
+			}
+		}
+
+		return hasUpper && hasDigit && hasSpecial
+	})
 }
 
 func writeJSON(w http.ResponseWriter, status int, data any) error {
