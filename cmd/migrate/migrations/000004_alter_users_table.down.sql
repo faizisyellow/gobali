@@ -1,0 +1,1 @@
+ALTER TABLE users MODIFY password BINARY(40) NOT NULL;

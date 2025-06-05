@@ -26,6 +26,10 @@ func main() {
 		log.Fatal(err)
 	}
 
+	defer db.Close()
+
+	log.Info("database connection pool established")
+
 	app := &application{
 		configs:    conf,
 		repository: repository.NewRepository(db),
