@@ -11,17 +11,27 @@ import (
 	"time"
 
 	"github.com/charmbracelet/log"
+	"github.com/faizisyellow/gobali/internal/repository"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
 type application struct {
-	configs config
+	configs    config
+	repository repository.Repository
 }
 
 type config struct {
 	addr string
 	env  string
+	db   dbConfig
+}
+
+type dbConfig struct {
+	addr        string
+	maxOpenConn int
+	maxIdleConn int
+	maxIdleTime string
 }
 
 func (app *application) mount() http.Handler {
