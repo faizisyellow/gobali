@@ -1,0 +1,1 @@
+ALTER TABLE user_invitation MODIFY COLUMN token VARBINARY(72) NOT NULL;

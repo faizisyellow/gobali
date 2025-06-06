@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/faizisyellow/gobali/internal/repository"
+	"github.com/go-chi/chi/v5"
 )
 
 type CreateUserPayload struct {
@@ -48,5 +49,17 @@ func (app *application) CreateUserHandler(w http.ResponseWriter, r *http.Request
 }
 
 func (app *application) ActivateUserHandler(w http.ResponseWriter, r *http.Request) {
+	inviteToken := chi.URLParam(r, "token")
 
+	err := app.repository.Users.Activate(r.Context(), inviteToken)
+	if err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+
+	if err := app.jsonResponse(w, http.StatusCreated, "user activated successfuly"); err != nil {
+
+		app.internalServerError(w, r, err)
+		return
+	}
 }

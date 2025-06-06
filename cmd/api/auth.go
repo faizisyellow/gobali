@@ -74,7 +74,6 @@ func (app *application) RegisterHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// send email
-	// TODO: send email still 401
 	status, err := app.mailer.Send(mailer.UserWelcomeTemplate, user.Username, user.Email, vars, isDevEnv)
 	if err != nil {
 		log.Error("error sending welcome email", "error", err.Error())
@@ -90,11 +89,7 @@ func (app *application) RegisterHandler(w http.ResponseWriter, r *http.Request) 
 
 	log.Info("Email sent", "status code", status)
 
-	if isDevEnv {
-		log.Info("token activation", "token", plainToken)
-	}
-
-	if err := app.jsonResponse(w, http.StatusCreated, "register user successfull"); err != nil {
+	if err := app.jsonResponse(w, http.StatusCreated, plainToken); err != nil {
 		app.internalServerError(w, r, err)
 
 		return

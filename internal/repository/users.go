@@ -2,7 +2,9 @@ package repository
 
 import (
 	"context"
+	"crypto/sha256"
 	"database/sql"
+	"encoding/hex"
 	"strings"
 	"time"
 
@@ -64,7 +66,12 @@ func (u *UserRepository) Create(ctx context.Context, payload *User) error {
 
 	_, err := u.db.ExecContext(ctx, query, payload.Username, payload.Email, payload.Password.Hash, payload.Role.Name)
 	if err != nil {
-		return err
+		switch err {
+		case sql.ErrNoRows:
+			return ErrNoRows
+		default:
+			return err
+		}
 	}
 
 	return nil
@@ -132,13 +139,110 @@ func (u *UserRepository) CreateAndInvite(ctx context.Context, user *User, token 
 	})
 }
 
-func (u *UserRepository) Delete(ctx context.Context, userId int) error {
-	query := `DELETE FROM users WHERE id = ?`
+func (u *UserRepository) GetUserInvitation(ctx context.Context, tx *sql.Tx, token string) (*User, error) {
+	query := `
+		SELECT u.id, u.username, u.email, u.is_active FROM users u
+		JOIN user_invitation ui ON u.id = ui.user_id
+		WHERE ui.token = ? AND ui.expire > ? 
+	`
 
-	_, err := u.db.ExecContext(ctx, query, userId)
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
+
+	hash := sha256.Sum256([]byte(token))
+	hashToken := hex.EncodeToString(hash[:])
+	user := &User{}
+
+	err := tx.QueryRowContext(ctx, query, hashToken, time.Now()).Scan(&user.Id, &user.Username, &user.Email, &user.IsActive)
+	if err != nil {
+		switch err {
+		case sql.ErrNoRows:
+			return nil, ErrNoRows
+		default:
+			return nil, err
+		}
+	}
+
+	return user, nil
+}
+
+func (u *UserRepository) UpdateWithTx(ctx context.Context, tx *sql.Tx, user *User) error {
+	query := `UPDATE users SET username = ?, is_active = ? WHERE id = ?`
+
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
+
+	// updating the user
+	_, err := tx.ExecContext(ctx, query, &user.Username, &user.IsActive, &user.Id)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (u *UserRepository) deleteUserInvitation(ctx context.Context, tx *sql.Tx, userID int) error {
+	query := `DELETE FROM user_invitation WHERE user_id = ?`
+
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
+
+	_, err := tx.ExecContext(ctx, query, userID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u *UserRepository) DeleteUser(ctx context.Context, tx *sql.Tx, userId int) error {
+	query := `DELETE FROM users WHERE id = ?`
+
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
+
+	_, err := tx.ExecContext(ctx, query, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u *UserRepository) Delete(ctx context.Context, userId int) error {
+	return withTx(u.db, ctx, func(tx *sql.Tx) error {
+		err := u.DeleteUser(ctx, tx, userId)
+		if err != nil {
+			return err
+		}
+
+		err = u.deleteUserInvitation(ctx, tx, userId)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
+func (u *UserRepository) Activate(ctx context.Context, token string) error {
+	return withTx(u.db, ctx, func(tx *sql.Tx) error {
+		user, err := u.GetUserInvitation(ctx, tx, token)
+		if err != nil {
+			return err
+		}
+
+		user.IsActive = true
+		err = u.UpdateWithTx(ctx, tx, user)
+		if err != nil {
+			return err
+		}
+
+		err = u.deleteUserInvitation(ctx, tx, user.Id)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
