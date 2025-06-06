@@ -1,0 +1,1 @@
+ALTER TABLE user_invitation MODIFY expire TIME NOT NULL

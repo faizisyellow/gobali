@@ -46,3 +46,7 @@ func (app *application) CreateUserHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 }
+
+func (app *application) ActivateUserHandler(w http.ResponseWriter, r *http.Request) {
+
+}

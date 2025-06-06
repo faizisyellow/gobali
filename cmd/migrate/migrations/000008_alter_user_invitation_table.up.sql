@@ -1,0 +1,1 @@
+ALTER TABLE user_invitation DROP FOREIGN KEY user_invitation_ibfk_1;

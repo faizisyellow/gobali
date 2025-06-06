@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/log"
+	"github.com/faizisyellow/gobali/internal/mailer"
 	"github.com/faizisyellow/gobali/internal/repository"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -19,12 +20,25 @@ import (
 type application struct {
 	configs    config
 	repository repository.Repository
+	mailer     mailer.Client
 }
 
 type config struct {
-	addr string
-	env  string
-	db   dbConfig
+	addr      string
+	env       string
+	db        dbConfig
+	mail      mailConfig
+	clientURL string
+}
+
+type mailConfig struct {
+	sendGrid  sendgridConfig
+	fromEmail string
+	exp       time.Duration
+}
+
+type sendgridConfig struct {
+	apiKey string
 }
 
 type dbConfig struct {
@@ -46,7 +60,12 @@ func (app *application) mount() http.Handler {
 		r.Get("/health", app.healthHandler)
 
 		r.Route("/users", func(r chi.Router) {
+			r.Put("/activate/{token}", app.ActivateUserHandler)
 			r.Post("/", app.CreateUserHandler)
+		})
+
+		r.Route("/authentication", func(r chi.Router) {
+			r.Post("/register", app.RegisterHandler)
 		})
 	})
 

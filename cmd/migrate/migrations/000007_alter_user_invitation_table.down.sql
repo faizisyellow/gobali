@@ -1,0 +1,1 @@
+ALTER TABLE user_invitation MODIFY token BINARY(32) NOT NULL;
