@@ -23,6 +23,18 @@ type CategoryResponse struct {
 	CreatedAt string `json:"created_at"`
 }
 
+//	@Summary		Create category
+//	@Description	Create category
+//	@Tags			categories
+//	@Accept			json
+//	@Produce		json
+//	@Param			payload	body		CreateCategoryPayload	true	"json format payload"
+//
+//	@Success		201		{object}	main.jsonResponse.envelope{data=string}
+//	@Failure		400		{object}	main.WriteJSONError.envelope
+//	@Failure		409		{object}	main.WriteJSONError.envelope
+//	@Failure		500		{object}	main.WriteJSONError.envelope
+//	@Router			/categories [POST]
 func (app *application) CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	payload := &CreateCategoryPayload{}
 
@@ -54,6 +66,16 @@ func (app *application) CreateCategoryHandler(w http.ResponseWriter, r *http.Req
 
 }
 
+//	@Summary		Get category
+//	@Description	Get category by ID
+//	@Tags			categories
+//	@Produce		json
+//	@Param			ID	path		int	true	"category id"
+//
+//	@Success		200	{object}	main.jsonResponse.envelope{data=repository.Category}
+//	@Failure		404	{object}	main.WriteJSONError.envelope
+//	@Failure		500	{object}	main.WriteJSONError.envelope
+//	@Router			/categories/{ID} [GET]
 func (app *application) GetCategoryByIDHandler(w http.ResponseWriter, r *http.Request) {
 	categoryId := chi.URLParam(r, "ID")
 
@@ -75,12 +97,21 @@ func (app *application) GetCategoryByIDHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	if err := app.jsonResponse(w, http.StatusCreated, cat); err != nil {
+	if err := app.jsonResponse(w, http.StatusOK, cat); err != nil {
 		app.internalServerError(w, r, err)
 		return
 	}
 }
 
+//	@Summary		Get categories
+//	@Description	Get all categories
+//	@Tags			categories
+//	@Produce		json
+//
+//	@Success		200	{object}	main.jsonResponse.envelope{data=[]CategoryResponse}
+//	@Failure		404	{object}	main.WriteJSONError.envelope
+//	@Failure		500	{object}	main.WriteJSONError.envelope
+//	@Router			/categories [GET]
 func (app *application) GetCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 
 	cats, err := app.repository.Categories.GetCategories(r.Context())
@@ -109,6 +140,17 @@ func (app *application) GetCategoriesHandler(w http.ResponseWriter, r *http.Requ
 
 }
 
+//	@Summary		Update Category
+//	@Description	Update Category by ID
+//	@Tags			categories
+//	@Accept			json
+//	@Produce		json
+//	@Param			ID		path		int						true	"Category ID"
+//	@Param			Payload	body		UpdateCategoryPayload	true	"Payload update category"
+//	@Success		201		{object}	main.jsonResponse.envelope{data=string}
+//	@Failure		404		{object}	main.WriteJSONError.envelope
+//	@Failure		500		{object}	main.WriteJSONError.envelope
+//	@Router			/categories/{ID} [PUT]
 func (app *application) UpdateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	payload := &UpdateCategoryPayload{}
 	catId := chi.URLParam(r, "ID")
@@ -165,6 +207,14 @@ func (app *application) UpdateCategoryHandler(w http.ResponseWriter, r *http.Req
 	}
 }
 
+//	@Summary		Delete Category
+//	@Description	Delete Category by ID
+//	@Tags			categories
+//	@Param			ID	path	int	true	"Category ID"
+//	@Success		204
+//	@Failure		404	{object}	main.WriteJSONError.envelope
+//	@Failure		500	{object}	main.WriteJSONError.envelope
+//	@Router			/categories/{ID} [delete]
 func (app *application) DeleteCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	catId := chi.URLParam(r, "ID")
 

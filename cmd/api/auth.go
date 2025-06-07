@@ -18,6 +18,16 @@ type RegisterPayload struct {
 	Password string `json:"password" validate:"required,min=5,withspace,validpassword"`
 }
 
+// @Summary		Register user
+// @Description	Register new user
+// @Tags			auth
+// @Accept			json
+// @Produce		json
+// @Param			Payload	body		RegisterPayload	true	"Payload register new user"
+// @Success		201		{object}	main.jsonResponse.envelope{data=string}
+// @Failure		404		{object}	main.WriteJSONError.envelope
+// @Failure		500		{object}	main.WriteJSONError.envelope
+// @Router			/authentication/register [POST]
 func (app *application) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var payload RegisterPayload
 

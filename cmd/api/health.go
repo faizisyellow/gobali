@@ -1,11 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 )
 
+//	@Summary		Health
+//	@Description	Check Response
+//	@Tags			Health
+
+// @Success	200	{object}	main.jsonResponse.envelope{data=string}
+// @Failure	500	{object}	main.WriteJSONError.envelope
+// @Router		/health [GET]
 func (app *application) healthHandler(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Fprint(w, "ping")
+	if err := app.jsonResponse(w, http.StatusOK, "ping"); err != nil {
+		app.internalServerError(w, r, err)
+	}
 }

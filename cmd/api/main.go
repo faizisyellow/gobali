@@ -4,12 +4,30 @@ import (
 	"time"
 
 	"github.com/charmbracelet/log"
+	"github.com/faizisyellow/gobali/docs"
 	"github.com/faizisyellow/gobali/internal/db"
 	"github.com/faizisyellow/gobali/internal/env"
 	"github.com/faizisyellow/gobali/internal/mailer"
 	"github.com/faizisyellow/gobali/internal/repository"
 )
 
+const version = "0.1"
+
+//	@title			Gobali Restful API
+//	@version		1.0
+//	@description	Restful API Documentation for Gobali app.
+//	@termsOfService	http://swagger.io/terms/
+
+//	@contact.name	API Support
+//	@contact.url	http://www.swagger.io/support
+//	@contact.email	support@swagger.io
+
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+
+//	@schemes	http https
+//
+//	@BasePath	/v1
 func main() {
 
 	e := &env.Env{}
@@ -17,6 +35,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	docs.SwaggerInfo.Version = version
+	docs.SwaggerInfo.Host = e.GetString("ADDRESS", "localhost:8080")
 
 	mailConf := mailConfig{
 		sendGrid:  sendgridConfig{apiKey: e.GetString("API_URL_SENDGRID", "")},

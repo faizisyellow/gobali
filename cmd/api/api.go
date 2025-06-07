@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"net/http"
 	"os"
@@ -15,6 +16,7 @@ import (
 	"github.com/faizisyellow/gobali/internal/repository"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 type application struct {
@@ -58,6 +60,9 @@ func (app *application) mount() http.Handler {
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/health", app.healthHandler)
+		r.Get("/swagger/*", httpSwagger.Handler(
+			httpSwagger.URL(fmt.Sprintf("http:%v/swagger/doc.json", app.configs.addr)),
+		))
 
 		r.Route("/users", func(r chi.Router) {
 			r.Put("/activate/{token}", app.ActivateUserHandler)
