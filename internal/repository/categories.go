@@ -38,14 +38,14 @@ func (c *CategoriesRepository) Create(ctx context.Context, name string) error {
 }
 
 func (c *CategoriesRepository) GetByID(ctx context.Context, id int) (*Category, error) {
-	query := `SELECT  id, name, created_at FROM categories WHERE id = ?`
+	query := `SELECT  id, name, created_at,updated_at FROM categories WHERE id = ?`
 
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
 	cat := &Category{}
 
-	err := c.db.QueryRowContext(ctx, query, id).Scan(&cat.Id, &cat.Name, &cat.CreatedAt)
+	err := c.db.QueryRowContext(ctx, query, id).Scan(&cat.Id, &cat.Name, &cat.CreatedAt, &cat.UpdateAt)
 	if err != nil {
 		switch err {
 		case sql.ErrNoRows:

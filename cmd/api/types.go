@@ -9,34 +9,34 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-type CreateCategoryPayload struct {
-	Name string `json:"name" validate:"required,min=4"`
+type CreateTypePayload struct {
+	Name string `json:"name" validate:"required,min=5"`
 }
 
-type UpdateCategoryPayload struct {
-	CreateCategoryPayload
+type UpdateTypePayload struct {
+	CreateTypePayload
 }
 
-type CategoryResponse struct {
+type TypeResponse struct {
 	Id        int    `json:"id"`
 	Name      string `json:"name"`
 	CreatedAt string `json:"created_at"`
 }
 
-// @Summary		Create category
-// @Description	Create category
-// @Tags			categories
+// @Summary		Create Type
+// @Description	Create Type
+// @Tags			Types
 // @Accept			json
 // @Produce		json
-// @Param			payload	body		CreateCategoryPayload	true	"json format payload"
+// @Param			payload	body		CreateTypePayload	true	"json format payload"
 //
 // @Success		201		{object}	main.jsonResponse.envelope{data=string}
 // @Failure		400		{object}	main.WriteJSONError.envelope
 // @Failure		409		{object}	main.WriteJSONError.envelope
 // @Failure		500		{object}	main.WriteJSONError.envelope
-// @Router			/categories [POST]
-func (app *application) CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
-	payload := &CreateCategoryPayload{}
+// @Router			/types [POST]
+func (app *application) CreateTypeHandler(w http.ResponseWriter, r *http.Request) {
+	payload := &CreateTypePayload{}
 
 	if err := readJSON(w, r, payload); err != nil {
 		app.badRequestResponse(w, r, err)
@@ -48,9 +48,9 @@ func (app *application) CreateCategoryHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	if err := app.repository.Categories.Create(r.Context(), payload.Name); err != nil {
+	if err := app.repository.Types.Create(r.Context(), payload.Name); err != nil {
 		switch err {
-		case repository.ErrDuplicateCategory:
+		case repository.ErrDuplicateTypes:
 			app.conflictErrorResponse(w, r, err)
 		default:
 			app.internalServerError(w, r, err)
@@ -59,24 +59,24 @@ func (app *application) CreateCategoryHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	if err := app.jsonResponse(w, http.StatusCreated, "category created successfull"); err != nil {
+	if err := app.jsonResponse(w, http.StatusCreated, "type created successfull"); err != nil {
 		app.internalServerError(w, r, err)
 		return
 	}
 
 }
 
-// @Summary		Get category
-// @Description	Get category by ID
-// @Tags			categories
+// @Summary		Get Type
+// @Description	Get Type by ID
+// @Tags			Types
 // @Produce		json
-// @Param			ID	path		int	true	"category id"
+// @Param			ID	path		int	true	"Type id"
 //
-// @Success		200	{object}	main.jsonResponse.envelope{data=repository.Category}
+// @Success		200	{object}	main.jsonResponse.envelope{data=repository.Type}
 // @Failure		404	{object}	main.WriteJSONError.envelope
 // @Failure		500	{object}	main.WriteJSONError.envelope
-// @Router			/categories/{ID} [GET]
-func (app *application) GetCategoryByIDHandler(w http.ResponseWriter, r *http.Request) {
+// @Router			/types/{ID} [GET]
+func (app *application) GetTypeByIDHandler(w http.ResponseWriter, r *http.Request) {
 	categoryId := chi.URLParam(r, "ID")
 
 	id, err := strconv.Atoi(categoryId)
@@ -85,7 +85,7 @@ func (app *application) GetCategoryByIDHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	cat, err := app.repository.Categories.GetByID(r.Context(), id)
+	ty, err := app.repository.Types.GetByID(r.Context(), id)
 	if err != nil {
 		switch err {
 		case repository.ErrNoRows:
@@ -97,65 +97,65 @@ func (app *application) GetCategoryByIDHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	if err := app.jsonResponse(w, http.StatusOK, cat); err != nil {
+	if err := app.jsonResponse(w, http.StatusOK, ty); err != nil {
 		app.internalServerError(w, r, err)
 		return
 	}
 }
 
-// @Summary		Get categories
-// @Description	Get all categories
-// @Tags			categories
+// @Summary		Get types
+// @Description	Get all types
+// @Tags			Types
 // @Produce		json
 //
-// @Success		200	{object}	main.jsonResponse.envelope{data=[]CategoryResponse}
+// @Success		200	{object}	main.jsonResponse.envelope{data=[]TypeResponse}
 // @Failure		404	{object}	main.WriteJSONError.envelope
 // @Failure		500	{object}	main.WriteJSONError.envelope
-// @Router			/categories [GET]
-func (app *application) GetCategoriesHandler(w http.ResponseWriter, r *http.Request) {
+// @Router			/types [GET]
+func (app *application) GetTypesHandler(w http.ResponseWriter, r *http.Request) {
 
-	cats, err := app.repository.Categories.GetCategories(r.Context())
+	tys, err := app.repository.Types.GetTypes(r.Context())
 	if err != nil {
 		app.internalServerError(w, r, err)
 
 		return
 	}
 
-	catsRes := []*CategoryResponse{}
+	typeRes := []*TypeResponse{}
 
-	for _, cat := range cats {
-		newCat := &CategoryResponse{}
+	for _, ty := range tys {
+		newType := &TypeResponse{}
 
-		newCat.Id = cat.Id
-		newCat.Name = cat.Name
-		newCat.CreatedAt = cat.CreatedAt
+		newType.Id = ty.Id
+		newType.Name = ty.Name
+		newType.CreatedAt = ty.CreatedAt
 
-		catsRes = append(catsRes, newCat)
+		typeRes = append(typeRes, newType)
 	}
 
-	if err := app.jsonResponse(w, http.StatusOK, catsRes); err != nil {
+	if err := app.jsonResponse(w, http.StatusOK, typeRes); err != nil {
 		app.internalServerError(w, r, err)
 		return
 	}
 
 }
 
-// @Summary		Update Category
-// @Description	Update Category by ID
-// @Tags			categories
+// @Summary		Update type
+// @Description	Update type by ID
+// @Tags			Types
 // @Accept			json
 // @Produce		json
-// @Param			ID		path		int						true	"Category ID"
-// @Param			Payload	body		UpdateCategoryPayload	true	"Payload update category"
+// @Param			ID		path		int					true	"type ID"
+// @Param			Payload	body		UpdateTypePayload	true	"Payload update type"
 // @Success		201		{object}	main.jsonResponse.envelope{data=string}
 // @Failure		404		{object}	main.WriteJSONError.envelope
 // @Failure		500		{object}	main.WriteJSONError.envelope
-// @Router			/categories/{ID} [PUT]
-func (app *application) UpdateCategoryHandler(w http.ResponseWriter, r *http.Request) {
-	payload := &UpdateCategoryPayload{}
-	catId := chi.URLParam(r, "ID")
+// @Router			/types/{ID} [PUT]
+func (app *application) UpdateTypeHandler(w http.ResponseWriter, r *http.Request) {
+	payload := &UpdateTypePayload{}
+	typeId := chi.URLParam(r, "ID")
 
-	id, err := strconv.Atoi(catId)
+	id, err := strconv.Atoi(typeId)
 	if err != nil {
 		app.internalServerError(w, r, err)
 		return
@@ -173,7 +173,7 @@ func (app *application) UpdateCategoryHandler(w http.ResponseWriter, r *http.Req
 
 	ctx := r.Context()
 
-	cat, err := app.repository.Categories.GetByID(ctx, id)
+	ty, err := app.repository.Types.GetByID(ctx, id)
 	if err != nil {
 		switch err {
 		case repository.ErrNoRows:
@@ -185,40 +185,40 @@ func (app *application) UpdateCategoryHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	if cat.Name == payload.Name {
+	if ty.Name == payload.Name {
 		alreadyExist := errors.New("can not update name to previous name")
 
 		app.badRequestResponse(w, r, alreadyExist)
 		return
 	}
 
-	newCat := &repository.Category{}
-	newCat.Id = id
-	newCat.Name = payload.Name
+	newType := &repository.Type{}
+	newType.Id = id
+	newType.Name = payload.Name
 
-	if err := app.repository.Categories.Update(ctx, newCat); err != nil {
+	if err := app.repository.Types.Update(ctx, newType); err != nil {
 		app.internalServerError(w, r, err)
 		return
 	}
 
-	if err := app.jsonResponse(w, http.StatusCreated, "update category successfull"); err != nil {
+	if err := app.jsonResponse(w, http.StatusCreated, "update type successfull"); err != nil {
 		app.internalServerError(w, r, err)
 		return
 	}
 }
 
-// @Summary		Delete Category
-// @Description	Delete Category by ID
-// @Tags			categories
-// @Param			ID	path	int	true	"Category ID"
+// @Summary		Delete Type
+// @Description	Delete Type by ID
+// @Tags			Types
+// @Param			ID	path	int	true	"Type ID"
 // @Success		204
 // @Failure		404	{object}	main.WriteJSONError.envelope
 // @Failure		500	{object}	main.WriteJSONError.envelope
-// @Router			/categories/{ID} [delete]
-func (app *application) DeleteCategoryHandler(w http.ResponseWriter, r *http.Request) {
-	catId := chi.URLParam(r, "ID")
+// @Router			/types/{ID} [delete]
+func (app *application) DeleteTypeHandler(w http.ResponseWriter, r *http.Request) {
+	typeId := chi.URLParam(r, "ID")
 
-	id, err := strconv.Atoi(catId)
+	id, err := strconv.Atoi(typeId)
 	if err != nil {
 		app.internalServerError(w, r, err)
 		return
@@ -226,7 +226,7 @@ func (app *application) DeleteCategoryHandler(w http.ResponseWriter, r *http.Req
 
 	ctx := r.Context()
 
-	cat, err := app.repository.Categories.GetByID(ctx, id)
+	ty, err := app.repository.Types.GetByID(ctx, id)
 	if err != nil {
 		switch err {
 		case repository.ErrNoRows:
@@ -238,7 +238,7 @@ func (app *application) DeleteCategoryHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	if err := app.repository.Categories.Delete(ctx, cat.Id); err != nil {
+	if err := app.repository.Types.Delete(ctx, ty.Id); err != nil {
 		app.internalServerError(w, r, err)
 		return
 	}

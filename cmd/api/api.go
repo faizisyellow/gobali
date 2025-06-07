@@ -91,6 +91,17 @@ func (app *application) mount() http.Handler {
 			})
 		})
 
+		r.Route("/types", func(r chi.Router) {
+			r.Get("/", app.GetTypesHandler)
+			r.Post("/", app.CreateTypeHandler)
+
+			r.Route("/{ID}", func(r chi.Router) {
+				r.Get("/", app.GetTypeByIDHandler)
+				r.Put("/", app.UpdateTypeHandler)
+				r.Delete("/", app.DeleteTypeHandler)
+			})
+		})
+
 		r.Route("/authentication", func(r chi.Router) {
 			r.Post("/register", app.RegisterHandler)
 		})

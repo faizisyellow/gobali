@@ -12,7 +12,7 @@ definitions:
   main.CreateCategoryPayload:
     properties:
       name:
-        minLength: 5
+        minLength: 4
         type: string
     required:
     - name
@@ -24,6 +24,14 @@ definitions:
         type: string
     required:
     - area
+    type: object
+  main.CreateTypePayload:
+    properties:
+      name:
+        minLength: 5
+        type: string
+    required:
+    - name
     type: object
   main.CreateUserPayload:
     properties:
@@ -64,10 +72,19 @@ definitions:
     - password
     - username
     type: object
+  main.TypeResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   main.UpdateCategoryPayload:
     properties:
       name:
-        minLength: 5
+        minLength: 4
         type: string
     required:
     - name
@@ -79,6 +96,14 @@ definitions:
         type: string
     required:
     - area
+    type: object
+  main.UpdateTypePayload:
+    properties:
+      name:
+        minLength: 5
+        type: string
+    required:
+    - name
     type: object
   main.WriteJSONError.envelope:
     properties:
@@ -110,6 +135,17 @@ definitions:
         type: string
       id:
         type: integer
+      updated_at:
+        type: string
+    type: object
+  repository.Type:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
       updated_at:
         type: string
     type: object
@@ -499,6 +535,165 @@ paths:
       summary: Update Location
       tags:
       - Locations
+  /types:
+    get:
+      description: Get all types
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/main.TypeResponse'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Get types
+      tags:
+      - Types
+    post:
+      consumes:
+      - application/json
+      description: Create Type
+      parameters:
+      - description: json format payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.CreateTypePayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Create Type
+      tags:
+      - Types
+  /types/{ID}:
+    delete:
+      description: Delete Type by ID
+      parameters:
+      - description: Type ID
+        in: path
+        name: ID
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Delete Type
+      tags:
+      - Types
+    get:
+      description: Get Type by ID
+      parameters:
+      - description: Type id
+        in: path
+        name: ID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/repository.Type'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Get Type
+      tags:
+      - Types
+    put:
+      consumes:
+      - application/json
+      description: Update type by ID
+      parameters:
+      - description: type ID
+        in: path
+        name: ID
+        required: true
+        type: integer
+      - description: Payload update type
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.UpdateTypePayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Update type
+      tags:
+      - Types
   /users:
     post:
       consumes:
