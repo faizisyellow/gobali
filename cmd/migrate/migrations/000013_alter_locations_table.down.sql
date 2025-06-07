@@ -1,0 +1,1 @@
+ALTER TABLE locations RENAME COLUMN updated_at to update_at;

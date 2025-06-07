@@ -17,6 +17,14 @@ definitions:
     required:
     - name
     type: object
+  main.CreateLocationPayload:
+    properties:
+      area:
+        minLength: 5
+        type: string
+    required:
+    - area
+    type: object
   main.CreateUserPayload:
     properties:
       email:
@@ -31,6 +39,15 @@ definitions:
     - email
     - password
     - username
+    type: object
+  main.LocationResponse:
+    properties:
+      area:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
     type: object
   main.RegisterPayload:
     properties:
@@ -55,6 +72,14 @@ definitions:
     required:
     - name
     type: object
+  main.UpdateLocationPayload:
+    properties:
+      area:
+        minLength: 5
+        type: string
+    required:
+    - area
+    type: object
   main.WriteJSONError.envelope:
     properties:
       errors:
@@ -74,6 +99,17 @@ definitions:
         type: integer
       name:
         type: string
+      updated_at:
+        type: string
+    type: object
+  repository.Location:
+    properties:
+      area:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
       updated_at:
         type: string
     type: object
@@ -300,6 +336,169 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+  /locations:
+    get:
+      description: Get All Locations
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/main.LocationResponse'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Get locations
+      tags:
+      - Locations
+    post:
+      consumes:
+      - application/json
+      description: Create new location
+      parameters:
+      - description: Payload create new location
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.CreateLocationPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Create location
+      tags:
+      - Locations
+  /locations/{ID}:
+    delete:
+      description: Delete Location by ID
+      parameters:
+      - description: Location ID
+        in: path
+        name: ID
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Delete Location
+      tags:
+      - Locations
+    get:
+      description: Get Location By ID
+      parameters:
+      - description: Location ID
+        in: path
+        name: ID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/repository.Location'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Get location
+      tags:
+      - Locations
+    put:
+      consumes:
+      - application/json
+      description: Update new Location
+      parameters:
+      - description: Location Id
+        in: path
+        name: ID
+        required: true
+        type: integer
+      - description: body new location
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.UpdateLocationPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Update Location
+      tags:
+      - Locations
   /users:
     post:
       consumes:

@@ -80,6 +80,17 @@ func (app *application) mount() http.Handler {
 			})
 		})
 
+		r.Route("/locations", func(r chi.Router) {
+			r.Post("/", app.CreateLocationHandler)
+			r.Get("/", app.GetLocationsHandler)
+
+			r.Route("/{ID}", func(r chi.Router) {
+				r.Get("/", app.GetLocationByIdHandler)
+				r.Put("/", app.UpdateLocationHandler)
+				r.Delete("/", app.DeleteLocationHandler)
+			})
+		})
+
 		r.Route("/authentication", func(r chi.Router) {
 			r.Post("/register", app.RegisterHandler)
 		})
