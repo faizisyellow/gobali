@@ -10,7 +10,7 @@ import (
 )
 
 type CreateCategoryPayload struct {
-	Name string `json:"name" validate:"required,min=4"`
+	Name string `json:"name" validate:"required,min=3"`
 }
 
 type UpdateCategoryPayload struct {

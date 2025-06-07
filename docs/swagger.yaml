@@ -9,14 +9,9 @@ definitions:
       name:
         type: string
       type:
-        $ref: '#/definitions/main.AmenityWithType'
+        $ref: '#/definitions/repository.SelectedType'
       type_id:
         type: integer
-    type: object
-  main.AmenityWithType:
-    properties:
-      name:
-        type: string
     type: object
   main.CategoryResponse:
     properties:
@@ -38,7 +33,7 @@ definitions:
   main.CreateCategoryPayload:
     properties:
       name:
-        minLength: 4
+        minLength: 3
         type: string
     required:
     - name
@@ -54,7 +49,7 @@ definitions:
   main.CreateTypePayload:
     properties:
       name:
-        minLength: 5
+        minLength: 3
         type: string
     required:
     - name
@@ -118,7 +113,7 @@ definitions:
   main.UpdateCategoryPayload:
     properties:
       name:
-        minLength: 4
+        minLength: 3
         type: string
     required:
     - name
@@ -134,7 +129,7 @@ definitions:
   main.UpdateTypePayload:
     properties:
       name:
-        minLength: 5
+        minLength: 3
         type: string
     required:
     - name

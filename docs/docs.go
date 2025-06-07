@@ -1270,18 +1270,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/main.AmenityWithType"
+                    "$ref": "#/definitions/repository.SelectedType"
                 },
                 "type_id": {
                     "type": "integer"
-                }
-            }
-        },
-        "main.AmenityWithType": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
                 }
             }
         },
@@ -1319,7 +1311,7 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "type": "string",
-                    "minLength": 4
+                    "minLength": 3
                 }
             }
         },
@@ -1343,7 +1335,7 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "type": "string",
-                    "minLength": 5
+                    "minLength": 3
                 }
             }
         },
@@ -1437,7 +1429,7 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "type": "string",
-                    "minLength": 4
+                    "minLength": 3
                 }
             }
         },
@@ -1461,7 +1453,7 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "type": "string",
-                    "minLength": 5
+                    "minLength": 3
                 }
             }
         },

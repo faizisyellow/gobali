@@ -10,7 +10,7 @@ import (
 )
 
 type CreateTypePayload struct {
-	Name string `json:"name" validate:"required,min=5"`
+	Name string `json:"name" validate:"required,min=3"`
 }
 
 type UpdateTypePayload struct {
