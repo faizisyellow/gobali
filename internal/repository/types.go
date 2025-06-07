@@ -17,6 +17,10 @@ type Type struct {
 	UpdateAt  string `json:"updated_at"`
 }
 
+type SelectedType struct {
+	Name string `json:"name"`
+}
+
 func (t *TypesRepository) Create(ctx context.Context, name string) error {
 	query := `INSERT INTO types(name) VALUE(?)`
 

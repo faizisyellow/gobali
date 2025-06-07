@@ -10,10 +10,6 @@ type AmenitiesRepository struct {
 	db *sql.DB
 }
 
-type SelectedType struct {
-	Name string `json:"name"`
-}
-
 type Amenity struct {
 	Id        int          `json:"id"`
 	Name      string       `json:"name"`

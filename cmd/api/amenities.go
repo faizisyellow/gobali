@@ -14,16 +14,12 @@ type CreateAmenityPayload struct {
 	TypeId int    `json:"type_id"`
 }
 
-type AmenityWithType struct {
-	Name string `json:"name"`
-}
-
 type AmenityResponse struct {
-	Id        int             `json:"id"`
-	Name      string          `json:"name"`
-	TypeId    int             `json:"type_id"`
-	CreatedAt string          `json:"created_at"`
-	Type      AmenityWithType `json:"type"`
+	Id        int                     `json:"id"`
+	Name      string                  `json:"name"`
+	TypeId    int                     `json:"type_id"`
+	CreatedAt string                  `json:"created_at"`
+	Type      repository.SelectedType `json:"type"`
 }
 
 type UpdateAmenityPayload struct {
