@@ -105,6 +105,17 @@ func (app *application) mount() http.Handler {
 			})
 		})
 
+		r.Route("/amenities", func(r chi.Router) {
+			r.Get("/", app.GetAmenitiesHandler)
+			r.Post("/", app.CreateAmenityHandler)
+
+			r.Route("/{ID}", func(r chi.Router) {
+				r.Get("/", app.GetAmenityByIDHandler)
+				r.Put("/", app.UpdateAmenityHandler)
+				r.Delete("/", app.DeleteAmenityHandler)
+			})
+		})
+
 		r.Route("/authentication", func(r chi.Router) {
 			r.Post("/register", app.RegisterHandler)
 		})

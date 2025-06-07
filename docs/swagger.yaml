@@ -1,5 +1,23 @@
 basePath: /v1
 definitions:
+  main.AmenityResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/main.AmenityWithType'
+      type_id:
+        type: integer
+    type: object
+  main.AmenityWithType:
+    properties:
+      name:
+        type: string
+    type: object
   main.CategoryResponse:
     properties:
       created_at:
@@ -8,6 +26,14 @@ definitions:
         type: integer
       name:
         type: string
+    type: object
+  main.CreateAmenityPayload:
+    properties:
+      name:
+        minLength: 3
+        type: string
+      type_id:
+        type: integer
     type: object
   main.CreateCategoryPayload:
     properties:
@@ -81,6 +107,14 @@ definitions:
       name:
         type: string
     type: object
+  main.UpdateAmenityPayload:
+    properties:
+      name:
+        minLength: 3
+        type: string
+      type_id:
+        type: integer
+    type: object
   main.UpdateCategoryPayload:
     properties:
       name:
@@ -116,6 +150,21 @@ definitions:
     properties:
       data: {}
     type: object
+  repository.Amenity:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/repository.SelectedType'
+      type_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
   repository.Category:
     properties:
       created_at:
@@ -136,6 +185,11 @@ definitions:
       id:
         type: integer
       updated_at:
+        type: string
+    type: object
+  repository.SelectedType:
+    properties:
+      name:
         type: string
     type: object
   repository.Type:
@@ -162,6 +216,165 @@ info:
   title: Gobali Restful API
   version: "1.0"
 paths:
+  /amenities:
+    get:
+      description: Get all Amenities
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/main.AmenityResponse'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Get Amenities
+      tags:
+      - Amenities
+    post:
+      consumes:
+      - application/json
+      description: Create Amenity
+      parameters:
+      - description: json format payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.CreateAmenityPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Create Amenity
+      tags:
+      - Amenities
+  /amenities/{ID}:
+    delete:
+      description: Delete Amenity by ID
+      parameters:
+      - description: Amenity ID
+        in: path
+        name: ID
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Delete Amenity
+      tags:
+      - Amenities
+    get:
+      description: Get Amenity by ID
+      parameters:
+      - description: amenity id
+        in: path
+        name: ID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/repository.Amenity'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Get Amenity
+      tags:
+      - Amenities
+    put:
+      consumes:
+      - application/json
+      description: Update Amenity by ID
+      parameters:
+      - description: Amenity ID
+        in: path
+        name: ID
+        required: true
+        type: integer
+      - description: Payload update Amenity
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.UpdateAmenityPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Update Amenity
+      tags:
+      - Amenities
   /authentication/register:
     post:
       consumes:

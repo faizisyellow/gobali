@@ -8,12 +8,14 @@ import (
 )
 
 var (
-	ErrDuplicateEmail    = errors.New("email already exists")
-	ErrDuplicateCategory = errors.New("category already exists")
-	ErrDuplicateLocation = errors.New("location already exist")
-	ErrDuplicateTypes    = errors.New("types already exist")
-	ErrNoRows            = errors.New("records not found")
-	QueryTimeoutDuration = 5 * time.Second
+	ErrDuplicateEmail     = errors.New("email already exists")
+	ErrDuplicateCategory  = errors.New("category already exists")
+	ErrDuplicateLocation  = errors.New("location already exist")
+	ErrDuplicateTypes     = errors.New("types already exist")
+	ErrDuplicateAmenities = errors.New("amenities already exist")
+	ErrTypeNotExist       = errors.New("type not exist")
+	ErrNoRows             = errors.New("records not found")
+	QueryTimeoutDuration  = 5 * time.Second
 )
 
 type Repository struct {
@@ -48,7 +50,14 @@ type Repository struct {
 		Create(ctx context.Context, name string) error
 		GetByID(ctx context.Context, id int) (*Type, error)
 		GetTypes(ctx context.Context) ([]*Type, error)
-		Update(ctx context.Context, category *Type) error
+		Update(ctx context.Context, Type *Type) error
+		Delete(ctx context.Context, id int) error
+	}
+	Amenities interface {
+		Create(ctx context.Context, name string, typeID int) error
+		GetByID(ctx context.Context, id int) (*Amenity, error)
+		GetAmenities(ctx context.Context) ([]*Amenity, error)
+		Update(ctx context.Context, Amenity *Amenity) error
 		Delete(ctx context.Context, id int) error
 	}
 }
@@ -60,6 +69,7 @@ func NewRepository(db *sql.DB) Repository {
 		Categories: &CategoriesRepository{db},
 		Location:   &LocationsRepository{db},
 		Types:      &TypesRepository{db},
+		Amenities:  &AmenitiesRepository{db},
 	}
 }
 
