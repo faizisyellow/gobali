@@ -43,6 +43,7 @@ func (app *application) CreateCategoryHandler(w http.ResponseWriter, r *http.Req
 		default:
 			app.internalServerError(w, r, err)
 		}
+
 		return
 	}
 
@@ -64,11 +65,13 @@ func (app *application) GetCategoryByIDHandler(w http.ResponseWriter, r *http.Re
 
 	cat, err := app.repository.Categories.GetByID(r.Context(), id)
 	if err != nil {
-		if errors.Is(err, repository.ErrNoRows) {
+		switch err {
+		case repository.ErrNoRows:
 			app.notFoundResponse(w, r, err)
+		default:
+			app.internalServerError(w, r, err)
 		}
 
-		app.internalServerError(w, r, err)
 		return
 	}
 
@@ -82,15 +85,7 @@ func (app *application) GetCategoriesHandler(w http.ResponseWriter, r *http.Requ
 
 	cats, err := app.repository.Categories.GetCategories(r.Context())
 	if err != nil {
-		switch err {
-		case repository.ErrDuplicateCategory:
-			if err := app.jsonResponse(w, http.StatusCreated, nil); err != nil {
-				app.internalServerError(w, r, err)
-				return
-			}
-		default:
-			app.internalServerError(w, r, err)
-		}
+		app.internalServerError(w, r, err)
 
 		return
 	}
@@ -138,11 +133,13 @@ func (app *application) UpdateCategoryHandler(w http.ResponseWriter, r *http.Req
 
 	cat, err := app.repository.Categories.GetByID(ctx, id)
 	if err != nil {
-		if errors.Is(err, repository.ErrNoRows) {
+		switch err {
+		case repository.ErrNoRows:
 			app.notFoundResponse(w, r, err)
+		default:
+			app.internalServerError(w, r, err)
 		}
 
-		app.internalServerError(w, r, err)
 		return
 	}
 
@@ -181,11 +178,13 @@ func (app *application) DeleteCategoryHandler(w http.ResponseWriter, r *http.Req
 
 	cat, err := app.repository.Categories.GetByID(ctx, id)
 	if err != nil {
-		if errors.Is(err, repository.ErrNoRows) {
+		switch err {
+		case repository.ErrNoRows:
 			app.notFoundResponse(w, r, err)
+		default:
+			app.internalServerError(w, r, err)
 		}
 
-		app.internalServerError(w, r, err)
 		return
 	}
 
