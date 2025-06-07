@@ -1,6 +1,8 @@
 package main
 
 import (
+	"expvar"
+	"runtime"
 	"time"
 
 	"github.com/charmbracelet/log"
@@ -25,9 +27,9 @@ const version = "0.1"
 //	@license.name	Apache 2.0
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-//	@schemes	http https
+// @schemes	http https
 //
-//	@BasePath	/v1
+// @BasePath	/v1
 func main() {
 
 	e := &env.Env{}
@@ -69,6 +71,15 @@ func main() {
 		repository: repository.NewRepository(db),
 		mailer:     sendGridMail,
 	}
+
+	// metrics collected
+	expvar.NewString("version").Set(version)
+	expvar.Publish("database", expvar.Func(func() any {
+		return db.Stats()
+	}))
+	expvar.Publish("goroutines", expvar.Func(func() any {
+		return runtime.NumGoroutine()
+	}))
 
 	mux := app.mount()
 

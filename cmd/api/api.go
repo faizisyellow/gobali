@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"expvar"
 	"fmt"
 
 	"net/http"
@@ -57,12 +58,14 @@ func (app *application) mount() http.Handler {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(middleware.Timeout(60 * time.Second))
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/health", app.healthHandler)
 		r.Get("/swagger/*", httpSwagger.Handler(
 			httpSwagger.URL(fmt.Sprintf("http:%v/swagger/doc.json", app.configs.addr)),
 		))
+		r.Get("/debug/vars", expvar.Handler().ServeHTTP)
 
 		r.Route("/users", func(r chi.Router) {
 			r.Put("/activate/{token}", app.ActivateUserHandler)
