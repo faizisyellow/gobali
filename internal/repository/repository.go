@@ -9,6 +9,7 @@ import (
 
 var (
 	ErrDuplicateEmail    = errors.New("email already exists")
+	ErrDuplicateCategory = errors.New("category already exists")
 	ErrNoRows            = errors.New("records not found")
 	QueryTimeoutDuration = 5 * time.Second
 )
@@ -27,12 +28,20 @@ type Repository struct {
 		Create(context.Context, *Role) error
 		GetByName(context.Context, string) (*Role, error)
 	}
+	Categories interface {
+		Create(ctx context.Context, name string) error
+		GetByID(ctx context.Context, id int) (*Category, error)
+		GetCategories(ctx context.Context) ([]*Category, error)
+		Update(ctx context.Context, category *Category) error
+		Delete(ctx context.Context, id int) error
+	}
 }
 
 func NewRepository(db *sql.DB) Repository {
 	return Repository{
-		Users: &UserRepository{db},
-		Roles: &RolesRepository{db},
+		Users:      &UserRepository{db},
+		Roles:      &RolesRepository{db},
+		Categories: &CategoriesRepository{db},
 	}
 }
 

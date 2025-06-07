@@ -64,6 +64,17 @@ func (app *application) mount() http.Handler {
 			r.Post("/", app.CreateUserHandler)
 		})
 
+		r.Route("/categories", func(r chi.Router) {
+			r.Post("/", app.CreateCategoryHandler)
+			r.Get("/", app.GetCategoriesHandler)
+
+			r.Route("/{ID}", func(r chi.Router) {
+				r.Get("/", app.GetCategoryByIDHandler)
+				r.Put("/", app.UpdateCategoryHandler)
+				r.Delete("/", app.DeleteCategoryHandler)
+			})
+		})
+
 		r.Route("/authentication", func(r chi.Router) {
 			r.Post("/register", app.RegisterHandler)
 		})
