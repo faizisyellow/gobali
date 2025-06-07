@@ -20,7 +20,7 @@ type RegisterPayload struct {
 
 // @Summary		Register user
 // @Description	Register new user
-// @Tags			auth
+// @Tags			Auth
 // @Accept			json
 // @Produce		json
 // @Param			Payload	body		RegisterPayload	true	"Payload register new user"

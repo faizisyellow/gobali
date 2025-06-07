@@ -34,7 +34,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "Auth"
                 ],
                 "summary": "Register user",
                 "parameters": [
@@ -89,7 +89,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "categories"
+                    "Categories"
                 ],
                 "summary": "Get categories",
                 "responses": {
@@ -137,7 +137,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "categories"
+                    "Categories"
                 ],
                 "summary": "Create category",
                 "parameters": [
@@ -198,7 +198,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "categories"
+                    "Categories"
                 ],
                 "summary": "Get category",
                 "parameters": [
@@ -252,7 +252,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "categories"
+                    "Categories"
                 ],
                 "summary": "Update Category",
                 "parameters": [
@@ -309,7 +309,7 @@ const docTemplate = `{
             "delete": {
                 "description": "Delete Category by ID",
                 "tags": [
-                    "categories"
+                    "Categories"
                 ],
                 "summary": "Delete Category",
                 "parameters": [
@@ -902,7 +902,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Create user",
                 "parameters": [
@@ -957,7 +957,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Activate user",
                 "parameters": [

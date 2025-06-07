@@ -196,7 +196,7 @@ paths:
             $ref: '#/definitions/main.WriteJSONError.envelope'
       summary: Register user
       tags:
-      - auth
+      - Auth
   /categories:
     get:
       description: Get all categories
@@ -224,7 +224,7 @@ paths:
             $ref: '#/definitions/main.WriteJSONError.envelope'
       summary: Get categories
       tags:
-      - categories
+      - Categories
     post:
       consumes:
       - application/json
@@ -262,7 +262,7 @@ paths:
             $ref: '#/definitions/main.WriteJSONError.envelope'
       summary: Create category
       tags:
-      - categories
+      - Categories
   /categories/{ID}:
     delete:
       description: Delete Category by ID
@@ -285,7 +285,7 @@ paths:
             $ref: '#/definitions/main.WriteJSONError.envelope'
       summary: Delete Category
       tags:
-      - categories
+      - Categories
     get:
       description: Get category by ID
       parameters:
@@ -316,7 +316,7 @@ paths:
             $ref: '#/definitions/main.WriteJSONError.envelope'
       summary: Get category
       tags:
-      - categories
+      - Categories
     put:
       consumes:
       - application/json
@@ -355,7 +355,7 @@ paths:
             $ref: '#/definitions/main.WriteJSONError.envelope'
       summary: Update Category
       tags:
-      - categories
+      - Categories
   /health:
     get:
       responses:
@@ -728,7 +728,7 @@ paths:
             $ref: '#/definitions/main.WriteJSONError.envelope'
       summary: Create user
       tags:
-      - users
+      - Users
   /users/activate/{token}:
     put:
       description: Activate user after register account
@@ -756,7 +756,7 @@ paths:
             $ref: '#/definitions/main.WriteJSONError.envelope'
       summary: Activate user
       tags:
-      - users
+      - Users
 schemes:
 - http
 - https
