@@ -15,6 +15,7 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/faizisyellow/gobali/internal/mailer"
 	"github.com/faizisyellow/gobali/internal/repository"
+	"github.com/faizisyellow/gobali/internal/uploader"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -24,6 +25,7 @@ type application struct {
 	configs    config
 	repository repository.Repository
 	mailer     mailer.Client
+	upload     uploader.Uploader
 }
 
 type config struct {
@@ -31,7 +33,12 @@ type config struct {
 	env       string
 	db        dbConfig
 	mail      mailConfig
+	upload    uploadConfig
 	clientURL string
+}
+
+type uploadConfig struct {
+	baseDir string
 }
 
 type mailConfig struct {
@@ -118,6 +125,7 @@ func (app *application) mount() http.Handler {
 
 		r.Route("/villas", func(r chi.Router) {
 			r.Get("/", app.GetVillasHandler)
+			r.Post("/", app.UploadImagesMiddleware(app.CreateVillaHandler, "villas"))
 
 			r.Route("/{villaID}", func(r chi.Router) {
 				r.Get("/", app.GetVillaByIdHandler)

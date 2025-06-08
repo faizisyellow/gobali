@@ -11,6 +11,7 @@ import (
 	"github.com/faizisyellow/gobali/internal/env"
 	"github.com/faizisyellow/gobali/internal/mailer"
 	"github.com/faizisyellow/gobali/internal/repository"
+	"github.com/faizisyellow/gobali/internal/uploader"
 )
 
 const version = "0.1"
@@ -53,6 +54,7 @@ func main() {
 		db:        dbConfig{addr: e.GetString("DB_ADDRESS", "nil"), maxOpenConn: 30, maxIdleConn: 30, maxIdleTime: "15m"},
 		mail:      mailConf,
 		clientURL: e.GetString("CLIENT_URL", "localhost:5173"),
+		upload:    uploadConfig{baseDir: "./internal/assets/"},
 	}
 
 	db, err := db.New(conf.db.addr, conf.db.maxOpenConn, conf.db.maxIdleConn, conf.db.maxIdleTime)
@@ -66,10 +68,13 @@ func main() {
 
 	sendGridMail := mailer.NewSendGrid(conf.mail.sendGrid.apiKey, conf.mail.fromEmail)
 
+	localUpload := uploader.NewLocalUpload(conf.upload.baseDir)
+
 	app := &application{
 		configs:    conf,
 		repository: repository.NewRepository(db),
 		mailer:     sendGridMail,
+		upload:     localUpload,
 	}
 
 	// metrics collected
