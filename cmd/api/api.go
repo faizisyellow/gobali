@@ -116,6 +116,15 @@ func (app *application) mount() http.Handler {
 			})
 		})
 
+		r.Route("/villas", func(r chi.Router) {
+			r.Get("/", app.GetVillasHandler)
+
+			r.Route("/{villaID}", func(r chi.Router) {
+				r.Get("/", app.GetVillaByIdHandler)
+				r.Delete("/", app.DeleteVillaByIdHandler)
+			})
+		})
+
 		r.Route("/authentication", func(r chi.Router) {
 			r.Post("/register", app.RegisterHandler)
 		})

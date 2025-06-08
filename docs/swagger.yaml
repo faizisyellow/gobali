@@ -182,6 +182,20 @@ definitions:
       updated_at:
         type: string
     type: object
+  repository.SelectedCategory:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  repository.SelectedLocation:
+    properties:
+      area:
+        type: string
+      id:
+        type: integer
+    type: object
   repository.SelectedType:
     properties:
       name:
@@ -195,6 +209,39 @@ definitions:
         type: integer
       name:
         type: string
+      updated_at:
+        type: string
+    type: object
+  repository.Villa:
+    properties:
+      baths:
+        type: integer
+      bedrooms:
+        type: integer
+      category:
+        $ref: '#/definitions/repository.SelectedCategory'
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      image_urls:
+        items:
+          type: string
+        type: array
+      location:
+        $ref: '#/definitions/repository.SelectedLocation'
+      location_id:
+        type: integer
+      min_guest:
+        type: integer
+      name:
+        type: string
+      price:
+        type: number
       updated_at:
         type: string
     type: object
@@ -965,6 +1012,86 @@ paths:
       summary: Activate user
       tags:
       - Users
+  /villas:
+    get:
+      description: Get All Villas
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/repository.Villa'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Get Villa
+      tags:
+      - Villas
+  /villas/{villaID}:
+    delete:
+      description: Delete Villa By ID
+      parameters:
+      - description: Villa ID
+        in: path
+        name: villaID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Delete Villa
+      tags:
+      - Villas
+    get:
+      description: Get Villa By ID
+      parameters:
+      - description: Villa ID
+        in: path
+        name: villaID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/repository.Villa'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Get Villa
+      tags:
+      - Villas
 schemes:
 - http
 - https

@@ -17,6 +17,11 @@ type Category struct {
 	UpdateAt  string `json:"updated_at"`
 }
 
+type SelectedCategory struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}
+
 func (c *CategoriesRepository) Create(ctx context.Context, name string) error {
 	query := `INSERT INTO categories(name) VALUE(?)`
 

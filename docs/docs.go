@@ -1254,6 +1254,136 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/villas": {
+            "get": {
+                "description": "Get All Villas",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Villas"
+                ],
+                "summary": "Get Villa",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/main.jsonResponse.envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/repository.Villa"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/main.WriteJSONError.envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/villas/{villaID}": {
+            "get": {
+                "description": "Get Villa By ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Villas"
+                ],
+                "summary": "Get Villa",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Villa ID",
+                        "name": "villaID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/main.jsonResponse.envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/repository.Villa"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/main.WriteJSONError.envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/main.WriteJSONError.envelope"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete Villa By ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Villas"
+                ],
+                "summary": "Delete Villa",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Villa ID",
+                        "name": "villaID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/main.WriteJSONError.envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/main.WriteJSONError.envelope"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1531,6 +1661,28 @@ const docTemplate = `{
                 }
             }
         },
+        "repository.SelectedCategory": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "repository.SelectedLocation": {
+            "type": "object",
+            "properties": {
+                "area": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
         "repository.SelectedType": {
             "type": "object",
             "properties": {
@@ -1550,6 +1702,56 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "repository.Villa": {
+            "type": "object",
+            "properties": {
+                "baths": {
+                    "type": "integer"
+                },
+                "bedrooms": {
+                    "type": "integer"
+                },
+                "category": {
+                    "$ref": "#/definitions/repository.SelectedCategory"
+                },
+                "category_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image_urls": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "location": {
+                    "$ref": "#/definitions/repository.SelectedLocation"
+                },
+                "location_id": {
+                    "type": "integer"
+                },
+                "min_guest": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
                 },
                 "updated_at": {
                     "type": "string"

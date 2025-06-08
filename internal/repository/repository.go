@@ -14,6 +14,7 @@ var (
 	ErrDuplicateTypes     = errors.New("types already exist")
 	ErrDuplicateAmenities = errors.New("amenities already exist")
 	ErrTypeNotExist       = errors.New("type not exist")
+	ErrCatOrLocNotExist   = errors.New("category or location not exist")
 	ErrNoRows             = errors.New("records not found")
 	QueryTimeoutDuration  = 5 * time.Second
 )
@@ -60,6 +61,11 @@ type Repository struct {
 		Update(ctx context.Context, Amenity *Amenity) error
 		Delete(ctx context.Context, id int) error
 	}
+	Villas interface {
+		GetById(ctx context.Context, id int) (*Villa, error)
+		GetVillas(ctx context.Context) ([]*Villa, error)
+		Delete(ctx context.Context, id int) error
+	}
 }
 
 func NewRepository(db *sql.DB) Repository {
@@ -70,6 +76,7 @@ func NewRepository(db *sql.DB) Repository {
 		Location:   &LocationsRepository{db},
 		Types:      &TypesRepository{db},
 		Amenities:  &AmenitiesRepository{db},
+		Villas:     &VillasRepository{db},
 	}
 }
 

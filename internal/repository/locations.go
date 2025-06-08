@@ -17,6 +17,11 @@ type Location struct {
 	UpdateAt  string `json:"updated_at"`
 }
 
+type SelectedLocation struct {
+	Id   int    `json:"id"`
+	Area string `json:"area"`
+}
+
 func (l *LocationsRepository) Create(ctx context.Context, area string) error {
 	query := `INSERT INTO locations(area) VALUE(?)`
 
