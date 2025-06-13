@@ -1,22 +1,39 @@
 package main
 
 import (
+	"context"
 	"net/http"
-	"net/textproto"
+
+	"github.com/faizisyellow/gobali/internal/uploader"
+)
+
+type filenamectxKey string
+
+var (
+	filenameKey filenamectxKey = "filenames"
 )
 
 func (app *application) UploadImagesMiddleware(next http.HandlerFunc, dst string) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		var allow = make(textproto.MIMEHeader, 0)
-		allow.Add("images", "jpg")
-		allow.Add("images", "jpeg")
-		allow.Add("images", "png")
+		allowContent := []string{"image/png", "image/jpeg"}
 
 		var maxMem int64 = 3 * 1024 * 1024 // 3 mb
 
-		app.upload.Upload(r, dst, &maxMem, allow)
+		filenames, err := app.upload.Upload(r, dst, maxMem, allowContent)
 
-		next.ServeHTTP(w, r)
+		if err != nil {
+			switch err {
+			case uploader.ErrExtNotAllowed:
+				app.badRequestResponse(w, r, err)
+			default:
+				app.internalServerError(w, r, err)
+			}
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), filenameKey, filenames)
+
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
