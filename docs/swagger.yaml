@@ -1036,6 +1036,48 @@ paths:
       summary: Get Villa
       tags:
       - Villas
+    post:
+      consumes:
+      - multipart/form-data
+      description: Create Villa
+      parameters:
+      - description: Image file
+        in: formData
+        name: image
+        required: true
+        type: file
+      - description: JSON string with villa info
+        in: formData
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Create Villa
+      tags:
+      - Villas
   /villas/{villaID}:
     delete:
       description: Delete Villa By ID
