@@ -6,8 +6,10 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/charmbracelet/log"
+	"github.com/google/uuid"
 )
 
 type LocalUpload struct {
@@ -33,9 +35,6 @@ func (l *LocalUpload) Upload(r *http.Request, dst string, maxMem int64, allowMim
 
 		contentType := headerFile.Header["Content-Type"][0]
 
-		fmt.Println("Detected file:", contentType)
-		fmt.Println("Want  file:", allowMime)
-
 		err := ValidateFile(allowMime, contentType)
 		if err != nil {
 			return nil, err
@@ -50,13 +49,19 @@ func (l *LocalUpload) Upload(r *http.Request, dst string, maxMem int64, allowMim
 
 	}
 
+	// save file
 	for _, fileHeader := range fileHeader {
 		file, err := fileHeader.Open()
 		if err != nil {
 			return nil, err
 		}
 
-		dst, err := os.Create(l.baseDir + fileHeader.Filename)
+		name, ex := strings.Split(fileHeader.Filename, ".")[0], strings.Split(fileHeader.Filename, ".")[1]
+
+		// dir/file-id.ext
+		filedes := fmt.Sprintf("%v%v-%v.%v", l.baseDir, name, uuid.New().String(), ex)
+
+		dst, err := os.Create(filedes)
 		if err != nil {
 			return nil, err
 		}
@@ -70,7 +75,7 @@ func (l *LocalUpload) Upload(r *http.Request, dst string, maxMem int64, allowMim
 
 		filenames = append(filenames, fileHeader.Filename)
 
-		log.Info("Success image uploaded")
+		log.Info("Image uploaded successfully")
 	}
 
 	return filenames, nil

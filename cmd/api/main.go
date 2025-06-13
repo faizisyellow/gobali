@@ -77,7 +77,7 @@ func main() {
 		upload:     localUpload,
 	}
 
-	// metrics collected
+	// server metrics
 	expvar.NewString("version").Set(version)
 	expvar.Publish("database", expvar.Func(func() any {
 		return db.Stats()
