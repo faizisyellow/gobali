@@ -27,14 +27,14 @@ type CreateVillaProp struct {
 }
 
 type UpdateVillaPayload struct {
-	Name        string  `json:"name" `
-	Description string  `json:"description"`
-	MinGuest    int     `json:"min_guest" `
-	Bedrooms    int     `json:"bedrooms"`
-	Price       float64 `json:"price" `
-	Baths       int     `json:"baths"`
-	LocationId  int     `json:"location_id"`
-	CategoryId  int     `json:"category_id"`
+	Name        *string  `json:"name" `
+	Description *string  `json:"description"`
+	MinGuest    *int     `json:"min_guest" `
+	Bedrooms    *int     `json:"bedrooms"`
+	Price       *float64 `json:"price" `
+	Baths       *int     `json:"baths"`
+	LocationId  *int     `json:"location_id"`
+	CategoryId  *int     `json:"category_id"`
 }
 
 // @Summary		Create Villa
@@ -116,6 +116,8 @@ func (app *application) CreateVillaHandler(w http.ResponseWriter, r *http.Reques
 // @Produce		json
 // @Param			ID	path	int	true	"Villa ID"
 // @Accept			mpfd
+// @Param			thumbnail	formData	file	false	"Image file"
+// @Param			others		formData	file	false	"Image file"
 // @Param			properties	formData	string	false	"Update Villa Props JSON string"	example({"name":"villa name","description":"villa description","min_guest":1,"bedrooms":1,"price":25,"location_id":3,"category_id":2,"baths":1})
 // @Success		201			{object}	main.jsonResponse.envelope{data=string}
 // @Failure		404			{object}	main.WriteJSONError.envelope
@@ -125,6 +127,15 @@ func (app *application) UpdateVillaHandler(w http.ResponseWriter, r *http.Reques
 	payload := &UpdateVillaPayload{}
 
 	ctx := r.Context()
+
+	images := ctx.Value(filenameKey)
+
+	var imagesUpdated []string
+
+	if images != nil {
+		v, _ := images.([]string)
+		imagesUpdated = v
+	}
 
 	if err := readJsonMultiPartForm(r, "properties", payload); err != nil {
 		app.badRequestResponse(w, r, err)
@@ -139,36 +150,40 @@ func (app *application) UpdateVillaHandler(w http.ResponseWriter, r *http.Reques
 	villa := GetVillaFromContext(r)
 
 	// huh ?
-	if payload.Name != "" {
-		villa.Name = payload.Name
+	if payload.Name != nil {
+		villa.Name = *payload.Name
 	}
 
-	if payload.Description != "" {
-		villa.Description = payload.Description
+	if images != nil {
+		villa.ImageUrls = imagesUpdated
 	}
 
-	if payload.Baths != 0 {
-		villa.Baths = payload.Baths
+	if payload.Description != nil {
+		villa.Description = *payload.Description
 	}
 
-	if payload.Bedrooms != 0 {
-		villa.Bedrooms = payload.Bedrooms
+	if payload.Baths != nil {
+		villa.Baths = *payload.Baths
 	}
 
-	if payload.Price != 0 {
-		villa.Price = payload.Price
+	if payload.Bedrooms != nil {
+		villa.Bedrooms = *payload.Bedrooms
 	}
 
-	if payload.MinGuest != 0 {
-		villa.MinGuest = payload.MinGuest
+	if payload.Price != nil {
+		villa.Price = *payload.Price
 	}
 
-	if payload.CategoryId != 0 {
-		villa.CategoryId = payload.CategoryId
+	if payload.MinGuest != nil {
+		villa.MinGuest = *payload.MinGuest
 	}
 
-	if payload.LocationId != 0 {
-		villa.LocationId = payload.LocationId
+	if payload.CategoryId != nil {
+		villa.CategoryId = *payload.CategoryId
+	}
+
+	if payload.LocationId != nil {
+		villa.LocationId = *payload.LocationId
 	}
 
 	if err := app.repository.Villas.Update(ctx, villa); err != nil {

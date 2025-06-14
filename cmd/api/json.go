@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -11,6 +12,7 @@ import (
 )
 
 var Validate *validator.Validate
+var ErrNoField = errors.New("field is required")
 
 func init() {
 	Validate = validator.New(validator.WithRequiredStructEnabled())
@@ -59,6 +61,10 @@ func readJSON(w http.ResponseWriter, r *http.Request, data any) error {
 func readJsonMultiPartForm(r *http.Request, field string, data any) error {
 
 	r.ParseMultipartForm(3 * 1045 * 1045)
+
+	if len(r.MultipartForm.Value[field]) == 0 {
+		return ErrNoField
+	}
 
 	jsonField := r.MultipartForm.Value[field][0]
 

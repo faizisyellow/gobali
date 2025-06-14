@@ -205,15 +205,20 @@ func (v *VillasRepository) GetVillas(ctx context.Context) ([]*Villa, error) {
 
 func (v *VillasRepository) Update(ctx context.Context, villa *Villa) error {
 
-	query := `UPDATE villas SET name=?, description=?, min_guest=?, bedrooms=?, price=?, baths=?,location_id=?,category_id=?
+	query := `UPDATE villas SET image_urls=?, name=?, description=?, min_guest=?, bedrooms=?, price=?, baths=?,location_id=?,category_id=?
 	WHERE id = ?
 	`
 
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	_, err := v.db.ExecContext(ctx, query,
+	images, err := json.Marshal(villa.ImageUrls)
+	if err != nil {
+		return err
+	}
 
+	_, err = v.db.ExecContext(ctx, query,
+		images,
 		&villa.Name,
 		&villa.Description,
 		&villa.MinGuest,

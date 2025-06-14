@@ -1392,6 +1392,18 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "file",
+                        "description": "Image file",
+                        "name": "thumbnail",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Image file",
+                        "name": "others",
+                        "in": "formData"
+                    },
+                    {
                         "type": "string",
                         "example": "{\"name\":\"villa name\",\"description\":\"villa description\",\"min_guest\":1,\"bedrooms\":1,\"price\":25,\"location_id\":3,\"category_id\":2,\"baths\":1}",
                         "description": "Update Villa Props JSON string",

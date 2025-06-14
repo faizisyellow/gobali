@@ -28,6 +28,7 @@ func (app *application) UploadImagesMiddleware(next http.HandlerFunc, dst string
 			default:
 				app.internalServerError(w, r, err)
 			}
+
 			return
 		}
 

@@ -28,6 +28,10 @@ func (l *LocalUpload) Upload(r *http.Request, grp string, maxMem int64, allowMim
 
 	FileFields := r.MultipartForm.File
 
+	if r.Method == "PUT" && FileFields == nil {
+		return nil, nil
+	}
+
 	fileHeader := []*multipart.FileHeader{}
 
 	filenames := []string{}
