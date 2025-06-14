@@ -83,7 +83,7 @@ func TestLocalUploaded(t *testing.T) {
 
 		want := []string{"image1.jpeg"}
 
-		result, err := lu.Upload(req, dst, maxMemo, allowMime)
+		result, err := lu.Upload(req, "test", maxMemo, allowMime)
 
 		if err != nil {
 			t.Error(err)
@@ -99,7 +99,7 @@ func TestLocalUploaded(t *testing.T) {
 
 		want := ErrExtNotAllowed
 
-		_, err := lu.Upload(req, lu.baseDir, maxMemo, allowMime)
+		_, err := lu.Upload(req, "test", maxMemo, allowMime)
 		if err != want {
 			t.Errorf("expected: %v but got: %v", want, err)
 		}
@@ -115,7 +115,7 @@ func TestLocalUploaded(t *testing.T) {
 
 		want := ErrSizeLarger
 
-		_, err := lu.Upload(req, lu.baseDir, maxMemo, allowMime)
+		_, err := lu.Upload(req, "test", maxMemo, allowMime)
 		if err != want {
 			t.Errorf("expected: %v but got: %v", want, err)
 		}
