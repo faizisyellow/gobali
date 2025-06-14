@@ -82,7 +82,7 @@ func (l *LocalUpload) Upload(r *http.Request, grp string, maxMem int64, allowMim
 			return nil, err
 		}
 
-		filenames = append(filenames, fileHeader.Filename)
+		filenames = append(filenames, fp)
 
 		log.Info("Image uploaded successfully")
 	}

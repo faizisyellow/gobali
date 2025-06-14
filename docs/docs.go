@@ -1311,14 +1311,22 @@ const docTemplate = `{
                     {
                         "type": "file",
                         "description": "Image file",
-                        "name": "image",
+                        "name": "thumbnail",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Image file",
+                        "name": "others",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "JSON string with villa info",
-                        "name": "data",
+                        "example": "{\"name\":\"villa name\",\"description\":\"villa description\",\"min_guest\":1,\"bedrooms\":1,\"price\":25,\"location_id\":3,\"category_id\":2,\"baths\":1}",
+                        "description": "CreateVillaProp JSON string",
+                        "name": "properties",
                         "in": "formData",
                         "required": true
                     }

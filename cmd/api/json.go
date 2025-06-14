@@ -56,6 +56,16 @@ func readJSON(w http.ResponseWriter, r *http.Request, data any) error {
 	return decoder.Decode(data)
 }
 
+func readJsonMultiPartForm(r *http.Request, field string, data any) error {
+
+	jsonField := r.MultipartForm.Value[field][0]
+
+	decoder := json.NewDecoder(strings.NewReader(jsonField))
+	decoder.DisallowUnknownFields()
+
+	return decoder.Decode(data)
+}
+
 func WriteJSONError(w http.ResponseWriter, status int, message *[]string) error {
 	type envelope struct {
 		Errors []string `json:"errors"`

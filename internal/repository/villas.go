@@ -29,13 +29,19 @@ type Villa struct {
 }
 
 func (v *VillasRepository) Create(ctx context.Context, villa *Villa) error {
-	query := `INSERT INTO villas(name,description,category_id,location_id,min_guest,bedrooms,price,image_urls)
-	VALUES(?,?,?,?,?,?,?,[?,?,?,?,?])`
+	query := `INSERT INTO villas(image_urls,name,description,category_id,location_id,min_guest,bedrooms,price,baths)
+	VALUES(?,?,?,?,?,?,?,?,?)`
 
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	_, err := v.db.ExecContext(ctx, query,
+	images, err := json.Marshal(villa.ImageUrls)
+	if err != nil {
+		return err
+	}
+
+	_, err = v.db.ExecContext(ctx, query,
+		images,
 		villa.Name,
 		villa.Description,
 		villa.CategoryId,
@@ -43,7 +49,8 @@ func (v *VillasRepository) Create(ctx context.Context, villa *Villa) error {
 		villa.MinGuest,
 		villa.Bedrooms,
 		villa.Price,
-		villa.ImageUrls)
+		villa.Baths,
+	)
 
 	if err != nil {
 		nexist := "Error 1452"

@@ -1043,12 +1043,18 @@ paths:
       parameters:
       - description: Image file
         in: formData
-        name: image
+        name: thumbnail
         required: true
         type: file
-      - description: JSON string with villa info
+      - description: Image file
         in: formData
-        name: data
+        name: others
+        required: true
+        type: file
+      - description: CreateVillaProp JSON string
+        example: '{"name":"villa name","description":"villa description","min_guest":1,"bedrooms":1,"price":25,"location_id":3,"category_id":2,"baths":1}'
+        in: formData
+        name: properties
         required: true
         type: string
       produces:

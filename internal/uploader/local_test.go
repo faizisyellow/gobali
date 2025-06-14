@@ -113,7 +113,7 @@ func TestLocalUploaded(t *testing.T) {
 
 		allowMime := []string{"image/png"}
 
-		want := ErrSizeLarger
+		want := ErrSizeTooLarger
 
 		_, err := lu.Upload(req, "test", maxMemo, allowMime)
 		if err != want {

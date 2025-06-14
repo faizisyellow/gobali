@@ -2,43 +2,107 @@ package main
 
 import (
 	"net/http"
+	"path/filepath"
 	"strconv"
 
+	"github.com/faizisyellow/gobali/internal/helpers"
 	"github.com/faizisyellow/gobali/internal/repository"
 	"github.com/go-chi/chi/v5"
 )
 
-// TODO: handle create villa
+type CreateVillaProp struct {
+	Name        string  `json:"name" validate:"required,min=4"`
+	Description string  `json:"description" validate:"required,min=8"`
+	MinGuest    int     `json:"min_guest" validate:"required,min=1"`
+	Bedrooms    int     `json:"bedrooms" validate:"required,min=1"`
+	Price       float64 `json:"price" validate:"required,min=1"`
+	Baths       int     `json:"baths" validate:"required,min=1"`
+	LocationId  int     `json:"location_id"`
+	CategoryId  int     `json:"category_id"`
+}
 
-//	@Summary		Create Villa
-//	@Description	Create Villa
-//	@Tags			Villas
-//	@Produce		json
-//	@Accept			mpfd
-//	@Param			image	formData	file	true	"Image file"
-//	@Param			data	formData	string	true	"JSON string with villa info"
-//	@Success		201		{object}	main.jsonResponse.envelope{data=string}
-//	@Success		400		{object}	main.WriteJSONError.envelope
-//	@Failure		404		{object}	main.WriteJSONError.envelope
-//	@Failure		500		{object}	main.WriteJSONError.envelope
-//	@Router			/villas [post]
+// @Summary		Create Villa
+// @Description	Create Villa
+// @Tags			Villas
+// @Produce		json
+// @Accept			mpfd
+// @Param			thumbnail	formData	file	true	"Image file"
+// @Param			others		formData	file	true	"Image file"
+// @Param			properties	formData	string	true	"CreateVillaProp JSON string"	example({"name":"villa name","description":"villa description","min_guest":1,"bedrooms":1,"price":25,"location_id":3,"category_id":2,"baths":1})
+// @Success		201			{object}	main.jsonResponse.envelope{data=string}
+// @Success		400			{object}	main.WriteJSONError.envelope
+// @Failure		404			{object}	main.WriteJSONError.envelope
+// @Failure		500			{object}	main.WriteJSONError.envelope
+// @Router			/villas [post]
 func (app *application) CreateVillaHandler(w http.ResponseWriter, r *http.Request) {
 
-	if err := app.jsonResponse(w, http.StatusCreated, "OK"); err != nil {
+	ctx := r.Context()
+
+	images := ctx.Value(filenameKey).([]string)
+	payload := &CreateVillaProp{}
+
+	if err := readJsonMultiPartForm(r, "properties", payload); err != nil {
+		for _, image := range images {
+			helpers.RemoveFile(filepath.Join(app.configs.upload.baseDir, "villas", image))
+		}
+
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	if err := Validate.Struct(payload); err != nil {
+		for _, image := range images {
+			helpers.RemoveFile(filepath.Join(app.configs.upload.baseDir, "villas", image))
+		}
+
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	newVilla := &repository.Villa{
+		Name:        payload.Name,
+		Description: payload.Description,
+		MinGuest:    payload.MinGuest,
+		Bedrooms:    payload.Bedrooms,
+		Baths:       payload.Baths,
+		Price:       payload.Price,
+		ImageUrls:   images,
+		CategoryId:  payload.CategoryId,
+		LocationId:  payload.LocationId,
+	}
+
+	err := app.repository.Villas.Create(ctx, newVilla)
+	if err != nil {
+		for _, image := range images {
+			helpers.RemoveFile(filepath.Join(app.configs.upload.baseDir, "villas", image))
+		}
+
+		switch err {
+		case repository.ErrCatOrLocNotExist:
+			app.badRequestResponse(w, r, err)
+		default:
+			app.internalServerError(w, r, err)
+
+		}
+
+		return
+	}
+
+	if err := app.jsonResponse(w, http.StatusCreated, "villa created successfully"); err != nil {
 		app.internalServerError(w, r, err)
 		return
 	}
 }
 
-//	@Summary		Get Villa
-//	@Description	Get Villa By ID
-//	@Tags			Villas
-//	@Produce		json
-//	@Param			villaID	path		int	true	"Villa ID"
-//	@Success		200		{object}	main.jsonResponse.envelope{data=repository.Villa}
-//	@Failure		404		{object}	main.WriteJSONError.envelope
-//	@Failure		500		{object}	main.WriteJSONError.envelope
-//	@Router			/villas/{villaID} [get]
+// @Summary		Get Villa
+// @Description	Get Villa By ID
+// @Tags			Villas
+// @Produce		json
+// @Param			villaID	path		int	true	"Villa ID"
+// @Success		200		{object}	main.jsonResponse.envelope{data=repository.Villa}
+// @Failure		404		{object}	main.WriteJSONError.envelope
+// @Failure		500		{object}	main.WriteJSONError.envelope
+// @Router			/villas/{villaID} [get]
 func (app *application) GetVillaByIdHandler(w http.ResponseWriter, r *http.Request) {
 	villaId := chi.URLParam(r, "villaID")
 
@@ -66,13 +130,13 @@ func (app *application) GetVillaByIdHandler(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-//	@Summary		Get Villa
-//	@Description	Get All Villas
-//	@Tags			Villas
-//	@Produce		json
-//	@Success		200	{object}	main.jsonResponse.envelope{data=[]repository.Villa}
-//	@Failure		500	{object}	main.WriteJSONError.envelope
-//	@Router			/villas [get]
+// @Summary		Get Villa
+// @Description	Get All Villas
+// @Tags			Villas
+// @Produce		json
+// @Success		200	{object}	main.jsonResponse.envelope{data=[]repository.Villa}
+// @Failure		500	{object}	main.WriteJSONError.envelope
+// @Router			/villas [get]
 func (app *application) GetVillasHandler(w http.ResponseWriter, r *http.Request) {
 
 	villas, err := app.repository.Villas.GetVillas(r.Context())
@@ -87,15 +151,15 @@ func (app *application) GetVillasHandler(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-//	@Summary		Delete Villa
-//	@Description	Delete Villa By ID
-//	@Tags			Villas
-//	@Produce		json
-//	@Param			villaID	path	int	true	"Villa ID"
-//	@Success		204
-//	@Failure		404	{object}	main.WriteJSONError.envelope
-//	@Failure		500	{object}	main.WriteJSONError.envelope
-//	@Router			/villas/{villaID} [delete]
+// @Summary		Delete Villa
+// @Description	Delete Villa By ID
+// @Tags			Villas
+// @Produce		json
+// @Param			villaID	path	int	true	"Villa ID"
+// @Success		204
+// @Failure		404	{object}	main.WriteJSONError.envelope
+// @Failure		500	{object}	main.WriteJSONError.envelope
+// @Router			/villas/{villaID} [delete]
 func (app *application) DeleteVillaByIdHandler(w http.ResponseWriter, r *http.Request) {
 	villaId := chi.URLParam(r, "villaID")
 

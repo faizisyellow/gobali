@@ -62,6 +62,7 @@ type Repository struct {
 		Delete(ctx context.Context, id int) error
 	}
 	Villas interface {
+		Create(ctx context.Context, villa *Villa) error
 		GetById(ctx context.Context, id int) (*Villa, error)
 		GetVillas(ctx context.Context) ([]*Villa, error)
 		Delete(ctx context.Context, id int) error
