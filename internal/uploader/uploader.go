@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	ErrExtNotAllowed = errors.New("extension not allowed")
-	ErrSizeLarger    = errors.New("size more than limit")
+	ErrExtNotAllowed = errors.New("this file type not allowed")
+	ErrSizeTooLarger = errors.New("size is too large")
 )
 
 type Uploader interface {
@@ -25,7 +25,7 @@ func ValidateFile(allowMime []string, contentType string) error {
 
 func ValidateSize(size, limit int64) error {
 	if size >= limit {
-		return ErrSizeLarger
+		return ErrSizeTooLarger
 	}
 
 	return nil

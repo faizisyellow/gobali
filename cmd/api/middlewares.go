@@ -23,7 +23,7 @@ func (app *application) UploadImagesMiddleware(next http.HandlerFunc, dst string
 		filenames, err := app.upload.Upload(r, dst, maxMem, allowMime)
 		if err != nil {
 			switch err {
-			case uploader.ErrExtNotAllowed, uploader.ErrSizeLarger:
+			case uploader.ErrExtNotAllowed, uploader.ErrSizeTooLarger:
 				app.badRequestResponse(w, r, err)
 			default:
 				app.internalServerError(w, r, err)
