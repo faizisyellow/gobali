@@ -1319,8 +1319,7 @@ const docTemplate = `{
                         "type": "file",
                         "description": "Image file",
                         "name": "others",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
@@ -1354,6 +1353,69 @@ const docTemplate = `{
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/main.WriteJSONError.envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/main.WriteJSONError.envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/main.WriteJSONError.envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/villas/{ID}": {
+            "put": {
+                "description": "Update Villa by ID",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Villas"
+                ],
+                "summary": "Update Villa",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Villa ID",
+                        "name": "ID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "{\"name\":\"villa name\",\"description\":\"villa description\",\"min_guest\":1,\"bedrooms\":1,\"price\":25,\"location_id\":3,\"category_id\":2,\"baths\":1}",
+                        "description": "Update Villa Props JSON string",
+                        "name": "properties",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/main.jsonResponse.envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {

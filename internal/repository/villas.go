@@ -203,6 +203,36 @@ func (v *VillasRepository) GetVillas(ctx context.Context) ([]*Villa, error) {
 	return villas, nil
 }
 
+func (v *VillasRepository) Update(ctx context.Context, villa *Villa) error {
+
+	query := `UPDATE villas SET name=?, description=?, min_guest=?, bedrooms=?, price=?, baths=?,location_id=?,category_id=?
+	WHERE id = ?
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
+
+	_, err := v.db.ExecContext(ctx, query,
+
+		&villa.Name,
+		&villa.Description,
+		&villa.MinGuest,
+		&villa.Bedrooms,
+		&villa.Price,
+		&villa.Baths,
+		&villa.LocationId,
+		&villa.CategoryId,
+		&villa.Id,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
 func (v *VillasRepository) Delete(ctx context.Context, id int) error {
 	query := `DELETE FROM villas WHERE id = ?`
 

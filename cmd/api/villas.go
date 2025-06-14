@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -9,6 +10,10 @@ import (
 	"github.com/faizisyellow/gobali/internal/repository"
 	"github.com/go-chi/chi/v5"
 )
+
+type villaCtxKey string
+
+const villaKey villaCtxKey = "villa"
 
 type CreateVillaProp struct {
 	Name        string  `json:"name" validate:"required,min=4"`
@@ -21,13 +26,24 @@ type CreateVillaProp struct {
 	CategoryId  int     `json:"category_id"`
 }
 
+type UpdateVillaPayload struct {
+	Name        string  `json:"name" `
+	Description string  `json:"description"`
+	MinGuest    int     `json:"min_guest" `
+	Bedrooms    int     `json:"bedrooms"`
+	Price       float64 `json:"price" `
+	Baths       int     `json:"baths"`
+	LocationId  int     `json:"location_id"`
+	CategoryId  int     `json:"category_id"`
+}
+
 // @Summary		Create Villa
 // @Description	Create Villa
 // @Tags			Villas
 // @Produce		json
 // @Accept			mpfd
 // @Param			thumbnail	formData	file	true	"Image file"
-// @Param			others		formData	file	true	"Image file"
+// @Param			others		formData	file	false	"Image file"
 // @Param			properties	formData	string	true	"CreateVillaProp JSON string"	example({"name":"villa name","description":"villa description","min_guest":1,"bedrooms":1,"price":25,"location_id":3,"category_id":2,"baths":1})
 // @Success		201			{object}	main.jsonResponse.envelope{data=string}
 // @Success		400			{object}	main.WriteJSONError.envelope
@@ -92,6 +108,79 @@ func (app *application) CreateVillaHandler(w http.ResponseWriter, r *http.Reques
 		app.internalServerError(w, r, err)
 		return
 	}
+}
+
+// @Summary		Update Villa
+// @Description	Update Villa by ID
+// @Tags			Villas
+// @Produce		json
+// @Param			ID	path	int	true	"Villa ID"
+// @Accept			mpfd
+// @Param			properties	formData	string	false	"Update Villa Props JSON string"	example({"name":"villa name","description":"villa description","min_guest":1,"bedrooms":1,"price":25,"location_id":3,"category_id":2,"baths":1})
+// @Success		201			{object}	main.jsonResponse.envelope{data=string}
+// @Failure		404			{object}	main.WriteJSONError.envelope
+// @Failure		500			{object}	main.WriteJSONError.envelope
+// @Router			/villas/{ID} [PUT]
+func (app *application) UpdateVillaHandler(w http.ResponseWriter, r *http.Request) {
+	payload := &UpdateVillaPayload{}
+
+	ctx := r.Context()
+
+	if err := readJsonMultiPartForm(r, "properties", payload); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	if err := Validate.Struct(payload); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	villa := GetVillaFromContext(r)
+
+	// huh ?
+	if payload.Name != "" {
+		villa.Name = payload.Name
+	}
+
+	if payload.Description != "" {
+		villa.Description = payload.Description
+	}
+
+	if payload.Baths != 0 {
+		villa.Baths = payload.Baths
+	}
+
+	if payload.Bedrooms != 0 {
+		villa.Bedrooms = payload.Bedrooms
+	}
+
+	if payload.Price != 0 {
+		villa.Price = payload.Price
+	}
+
+	if payload.MinGuest != 0 {
+		villa.MinGuest = payload.MinGuest
+	}
+
+	if payload.CategoryId != 0 {
+		villa.CategoryId = payload.CategoryId
+	}
+
+	if payload.LocationId != 0 {
+		villa.LocationId = payload.LocationId
+	}
+
+	if err := app.repository.Villas.Update(ctx, villa); err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+
+	if err := app.jsonResponse(w, http.StatusCreated, "updated villa successfully"); err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+
 }
 
 // @Summary		Get Villa
@@ -194,4 +283,40 @@ func (app *application) DeleteVillaByIdHandler(w http.ResponseWriter, r *http.Re
 		app.internalServerError(w, r, err)
 		return
 	}
+}
+
+func (app *application) VillaContentMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		villaId := chi.URLParam(r, "villaID")
+
+		id, err := strconv.Atoi(villaId)
+		if err != nil {
+			app.internalServerError(w, r, err)
+			return
+		}
+
+		ctx := r.Context()
+
+		villa, err := app.repository.Villas.GetById(ctx, id)
+		if err != nil {
+			switch err {
+			case repository.ErrNoRows:
+				app.notFoundResponse(w, r, err)
+			default:
+				app.internalServerError(w, r, err)
+			}
+
+			return
+		}
+
+		ctx = context.WithValue(ctx, villaKey, villa)
+
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+func GetVillaFromContext(r *http.Request) *repository.Villa {
+	villa := r.Context().Value(villaKey).(*repository.Villa)
+
+	return villa
 }

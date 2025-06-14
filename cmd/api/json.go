@@ -58,6 +58,8 @@ func readJSON(w http.ResponseWriter, r *http.Request, data any) error {
 
 func readJsonMultiPartForm(r *http.Request, field string, data any) error {
 
+	r.ParseMultipartForm(3 * 1045 * 1045)
+
 	jsonField := r.MultipartForm.Value[field][0]
 
 	decoder := json.NewDecoder(strings.NewReader(jsonField))

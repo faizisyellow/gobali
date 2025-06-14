@@ -66,6 +66,7 @@ type Repository struct {
 		GetById(ctx context.Context, id int) (*Villa, error)
 		GetVillas(ctx context.Context) ([]*Villa, error)
 		Delete(ctx context.Context, id int) error
+		Update(ctx context.Context, villa *Villa) error
 	}
 }
 

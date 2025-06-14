@@ -128,6 +128,9 @@ func (app *application) mount() http.Handler {
 			r.Post("/", app.UploadImagesMiddleware(app.CreateVillaHandler, "villas"))
 
 			r.Route("/{villaID}", func(r chi.Router) {
+				r.Use(app.VillaContentMiddleware)
+
+				r.Put("/", app.UpdateVillaHandler)
 				r.Get("/", app.GetVillaByIdHandler)
 				r.Delete("/", app.DeleteVillaByIdHandler)
 			})
