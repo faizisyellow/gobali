@@ -71,7 +71,6 @@ type Repository struct {
 	}
 	VillasAmenities interface {
 		Create(ctx context.Context, villaAmenity *VillasAmenities) error
-		Delete(ctx context.Context, villaId, amenityId int) error
 	}
 }
 

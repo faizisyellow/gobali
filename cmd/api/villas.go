@@ -208,25 +208,8 @@ func (app *application) UpdateVillaHandler(w http.ResponseWriter, r *http.Reques
 // @Failure		500		{object}	main.WriteJSONError.envelope
 // @Router			/villas/{villaID} [get]
 func (app *application) GetVillaByIdHandler(w http.ResponseWriter, r *http.Request) {
-	villaId := chi.URLParam(r, "villaID")
 
-	id, err := strconv.Atoi(villaId)
-	if err != nil {
-		app.internalServerError(w, r, err)
-		return
-	}
-
-	villa, err := app.repository.Villas.GetById(r.Context(), id)
-	if err != nil {
-		switch err {
-		case repository.ErrNoRows:
-			app.notFoundResponse(w, r, err)
-		default:
-			app.internalServerError(w, r, err)
-		}
-
-		return
-	}
+	villa := GetVillaFromContext(r)
 
 	if err := app.jsonResponse(w, http.StatusOK, villa); err != nil {
 		app.internalServerError(w, r, err)
@@ -265,29 +248,11 @@ func (app *application) GetVillasHandler(w http.ResponseWriter, r *http.Request)
 // @Failure		500	{object}	main.WriteJSONError.envelope
 // @Router			/villas/{villaID} [delete]
 func (app *application) DeleteVillaByIdHandler(w http.ResponseWriter, r *http.Request) {
-	villaId := chi.URLParam(r, "villaID")
 
-	id, err := strconv.Atoi(villaId)
-	if err != nil {
-		app.internalServerError(w, r, err)
-		return
-	}
+	villa := GetVillaFromContext(r)
 
 	ctx := r.Context()
-
-	villa, err := app.repository.Villas.GetById(ctx, id)
-	if err != nil {
-		switch err {
-		case repository.ErrNoRows:
-			app.notFoundResponse(w, r, err)
-		default:
-			app.internalServerError(w, r, err)
-		}
-
-		return
-	}
-
-	err = app.repository.Villas.Delete(ctx, villa.Id)
+	err := app.repository.Villas.Delete(ctx, villa.Id)
 	if err != nil {
 		app.internalServerError(w, r, err)
 		return
