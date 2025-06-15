@@ -36,3 +36,17 @@ func (va *VillasAmenitiesRepository) Create(ctx context.Context, VillaAmenities 
 
 	return nil
 }
+
+func (va *VillasAmenitiesRepository) Delete(ctx context.Context, villaId, amenityId int) error {
+	query := `DELETE FROM villas_amenities WHERE villa_id = ? AND amenity_id = ?`
+
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
+
+	_, err := va.db.ExecContext(ctx, query, villaId, amenityId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
