@@ -8,15 +8,16 @@ import (
 )
 
 var (
-	ErrDuplicateEmail     = errors.New("email already exists")
-	ErrDuplicateCategory  = errors.New("category already exists")
-	ErrDuplicateLocation  = errors.New("location already exist")
-	ErrDuplicateTypes     = errors.New("types already exist")
-	ErrDuplicateAmenities = errors.New("amenities already exist")
-	ErrTypeNotExist       = errors.New("type not exist")
-	ErrCatOrLocNotExist   = errors.New("category or location not exist")
-	ErrNoRows             = errors.New("records not found")
-	QueryTimeoutDuration  = 5 * time.Second
+	ErrDuplicateVillaAmenity = errors.New("this villa already has the amenity")
+	ErrDuplicateEmail        = errors.New("email already exists")
+	ErrDuplicateCategory     = errors.New("category already exists")
+	ErrDuplicateLocation     = errors.New("location already exist")
+	ErrDuplicateTypes        = errors.New("types already exist")
+	ErrDuplicateAmenities    = errors.New("amenities already exist")
+	ErrTypeNotExist          = errors.New("type not exist")
+	ErrCatOrLocNotExist      = errors.New("category or location not exist")
+	ErrNoRows                = errors.New("records not found")
+	QueryTimeoutDuration     = 5 * time.Second
 )
 
 type Repository struct {
@@ -68,17 +69,21 @@ type Repository struct {
 		Delete(ctx context.Context, id int) error
 		Update(ctx context.Context, villa *Villa) error
 	}
+	VillasAmenities interface {
+		Create(ctx context.Context, villaAmenity *VillasAmenities) error
+	}
 }
 
 func NewRepository(db *sql.DB) Repository {
 	return Repository{
-		Users:      &UserRepository{db},
-		Roles:      &RolesRepository{db},
-		Categories: &CategoriesRepository{db},
-		Location:   &LocationsRepository{db},
-		Types:      &TypesRepository{db},
-		Amenities:  &AmenitiesRepository{db},
-		Villas:     &VillasRepository{db},
+		Users:           &UserRepository{db},
+		Roles:           &RolesRepository{db},
+		Categories:      &CategoriesRepository{db},
+		Location:        &LocationsRepository{db},
+		Types:           &TypesRepository{db},
+		Amenities:       &AmenitiesRepository{db},
+		Villas:          &VillasRepository{db},
+		VillasAmenities: &VillasAmenitiesRepository{db},
 	}
 }
 
