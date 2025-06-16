@@ -19,6 +19,7 @@ type Villa struct {
 	LocationId  int              `json:"location_id"`
 	Category    SelectedCategory `json:"category"`
 	Location    SelectedLocation `json:"location"`
+	Amenity     SelectedAmenity  `json:"amentiy"`
 	MinGuest    int              `json:"min_guest"`
 	Bedrooms    int              `json:"bedrooms"`
 	Price       float64          `json:"price"`
@@ -28,7 +29,7 @@ type Villa struct {
 	UpdateAt    string           `json:"updated_at"`
 }
 
-func (v *VillasRepository) Create(ctx context.Context, villa *Villa) error {
+func (v *VillasRepository) Create(ctx context.Context, tx *sql.Tx, villa *Villa) (int64, error) {
 	query := `INSERT INTO villas(image_urls,name,description,category_id,location_id,min_guest,bedrooms,price,baths)
 	VALUES(?,?,?,?,?,?,?,?,?)`
 
@@ -37,10 +38,10 @@ func (v *VillasRepository) Create(ctx context.Context, villa *Villa) error {
 
 	images, err := json.Marshal(villa.ImageUrls)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	_, err = v.db.ExecContext(ctx, query,
+	res, err := tx.ExecContext(ctx, query,
 		images,
 		villa.Name,
 		villa.Description,
@@ -57,13 +58,51 @@ func (v *VillasRepository) Create(ctx context.Context, villa *Villa) error {
 
 		switch {
 		case strings.Contains(err.Error(), nexist):
-			return ErrCatOrLocNotExist
+			return 0, ErrCatOrLocNotExist
+		default:
+			return 0, err
+		}
+	}
+
+	return res.LastInsertId()
+}
+
+func (v *VillasRepository) CreateVillasAmenities(ctx context.Context, tx *sql.Tx, villaId, amenityId int) error {
+	query := `INSERT INTO villas_amenities(villa_id,amenity_id) VALUES(?,?)`
+
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
+
+	_, err := tx.ExecContext(ctx, query, villaId, amenityId)
+	if err != nil {
+
+		duplicateKey := "Error 1062"
+
+		switch {
+		case strings.Contains(err.Error(), duplicateKey):
+			return ErrDuplicateVillaAmenity
 		default:
 			return err
 		}
 	}
 
 	return nil
+}
+
+func (v *VillasRepository) CreateVillaWithAmenity(ctx context.Context, payload *Villa) error {
+	return withTx(v.db, ctx, func(tx *sql.Tx) error {
+
+		villaId, err := v.Create(ctx, tx, payload)
+		if err != nil {
+			return err
+		}
+
+		if err := v.CreateVillasAmenities(ctx, tx, int(villaId), payload.Amenity.Id); err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
 func (v *VillasRepository) GetById(ctx context.Context, id int) (*Villa, error) {
@@ -132,6 +171,7 @@ func (v *VillasRepository) GetById(ctx context.Context, id int) (*Villa, error) 
 	return villa, nil
 }
 
+// TODO: SHOULD RETURN AMANITIES
 func (v *VillasRepository) GetVillas(ctx context.Context) ([]*Villa, error) {
 	query := `
 	SELECT
@@ -149,10 +189,14 @@ func (v *VillasRepository) GetVillas(ctx context.Context) ([]*Villa, error) {
 		c.name,
 		l.id,
 		l.area,
+		a.id,
+		a.name,
 		v.created_at,
 		v.updated_at
 	FROM
-    	villas v LEFT JOIN categories c ON v.category_id = c.id LEFT JOIN locations l ON v.location_id = l.id`
+    	villas v LEFT JOIN categories c ON v.category_id = c.id LEFT JOIN locations l ON v.location_id = l.id
+		LEFT JOIN villas_amenities va ON v.id = va.villa_id LEFT JOIN amenities a ON va.amenity_id = a.id
+		`
 
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
@@ -184,6 +228,8 @@ func (v *VillasRepository) GetVillas(ctx context.Context) ([]*Villa, error) {
 			&villa.Category.Name,
 			&villa.Location.Id,
 			&villa.Location.Area,
+			&villa.Amenity.Id,
+			&villa.Amenity.Name,
 			&villa.CreatedAt,
 			&villa.UpdateAt,
 		)

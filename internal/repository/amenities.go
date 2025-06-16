@@ -19,6 +19,12 @@ type Amenity struct {
 	UpdateAt  string       `json:"updated_at"`
 }
 
+type SelectedAmenity struct {
+	Id   int          `json:"id"`
+	Name string       `json:"name"`
+	Type SelectedType `json:"type"`
+}
+
 func (a *AmenitiesRepository) Create(ctx context.Context, name string, typeId int) error {
 	query := `INSERT INTO amenities(name,type_id) VALUE(?, ?)`
 

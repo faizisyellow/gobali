@@ -63,7 +63,7 @@ type Repository struct {
 		Delete(ctx context.Context, id int) error
 	}
 	Villas interface {
-		Create(ctx context.Context, villa *Villa) error
+		CreateVillaWithAmenity(ctx context.Context, payload *Villa) error
 		GetById(ctx context.Context, id int) (*Villa, error)
 		GetVillas(ctx context.Context) ([]*Villa, error)
 		Delete(ctx context.Context, id int) error
@@ -76,14 +76,13 @@ type Repository struct {
 
 func NewRepository(db *sql.DB) Repository {
 	return Repository{
-		Users:           &UserRepository{db},
-		Roles:           &RolesRepository{db},
-		Categories:      &CategoriesRepository{db},
-		Location:        &LocationsRepository{db},
-		Types:           &TypesRepository{db},
-		Amenities:       &AmenitiesRepository{db},
-		Villas:          &VillasRepository{db},
-		VillasAmenities: &VillasAmenitiesRepository{db},
+		Users:      &UserRepository{db},
+		Roles:      &RolesRepository{db},
+		Categories: &CategoriesRepository{db},
+		Location:   &LocationsRepository{db},
+		Types:      &TypesRepository{db},
+		Amenities:  &AmenitiesRepository{db},
+		Villas:     &VillasRepository{db},
 	}
 }
 

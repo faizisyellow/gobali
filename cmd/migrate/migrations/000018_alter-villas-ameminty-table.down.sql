@@ -1,0 +1,1 @@
+ALTER TABLE villas_amenities RENAME COLUMN amenity_id to amentity_id;

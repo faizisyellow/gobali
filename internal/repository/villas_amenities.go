@@ -15,13 +15,13 @@ type VillasAmenities struct {
 	AmenityId int `json:"amenity_id"`
 }
 
-func (va *VillasAmenitiesRepository) Create(ctx context.Context, VillaAmenities *VillasAmenities) error {
+func (va *VillasAmenitiesRepository) Create(ctx context.Context, tx *sql.Tx, VillaAmenities *VillasAmenities) error {
 	query := `INSERT INTO villas_amenities(villa_id,amenity_id) VALUES(?,?)`
 
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	_, err := va.db.ExecContext(ctx, query, VillaAmenities.VillaId, VillaAmenities.AmenityId)
+	_, err := tx.ExecContext(ctx, query, VillaAmenities.VillaId, VillaAmenities.AmenityId)
 	if err != nil {
 
 		duplicateKey := "Error 1062"

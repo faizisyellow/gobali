@@ -22,6 +22,7 @@ type CreateVillaProp struct {
 	Bedrooms    int     `json:"bedrooms" validate:"required,min=1"`
 	Price       float64 `json:"price" validate:"required,min=1"`
 	Baths       int     `json:"baths" validate:"required,min=1"`
+	AmenityId   int     `json:"amenity_id"`
 	LocationId  int     `json:"location_id"`
 	CategoryId  int     `json:"category_id"`
 }
@@ -37,6 +38,40 @@ type UpdateVillaPayload struct {
 	CategoryId  *int     `json:"category_id"`
 }
 
+func (u *UpdateVillaPayload) Apply(villa *repository.Villa) {
+	if u.Name != nil {
+		villa.Name = *u.Name
+	}
+
+	if u.Baths != nil {
+		villa.Baths = *u.Baths
+	}
+
+	if u.Bedrooms != nil {
+		villa.Bedrooms = *u.Bedrooms
+	}
+
+	if u.CategoryId != nil {
+		villa.CategoryId = *u.CategoryId
+	}
+
+	if u.Description != nil {
+		villa.Description = *u.Description
+	}
+
+	if u.LocationId != nil {
+		villa.LocationId = *u.LocationId
+	}
+
+	if u.MinGuest != nil {
+		villa.MinGuest = *u.MinGuest
+	}
+
+	if u.Price != nil {
+		villa.Price = *u.Price
+	}
+}
+
 // @Summary		Create Villa
 // @Description	Create Villa
 // @Tags			Villas
@@ -44,7 +79,7 @@ type UpdateVillaPayload struct {
 // @Accept			mpfd
 // @Param			thumbnail	formData	file	true	"Image file"
 // @Param			others		formData	file	false	"Image file"
-// @Param			properties	formData	string	true	"CreateVillaProp JSON string"	example({"name":"villa name","description":"villa description","min_guest":1,"bedrooms":1,"price":25,"location_id":3,"category_id":2,"baths":1})
+// @Param			properties	formData	string	true	"CreateVillaProp JSON string"	example({"name":"villa name","description":"villa description","min_guest":1,"bedrooms":1,"price":25,"location_id":3,"category_id":2,"baths":1,"amenity_id":4})
 // @Success		201			{object}	main.jsonResponse.envelope{data=string}
 // @Success		400			{object}	main.WriteJSONError.envelope
 // @Failure		404			{object}	main.WriteJSONError.envelope
@@ -85,9 +120,10 @@ func (app *application) CreateVillaHandler(w http.ResponseWriter, r *http.Reques
 		ImageUrls:   images,
 		CategoryId:  payload.CategoryId,
 		LocationId:  payload.LocationId,
+		Amenity:     repository.SelectedAmenity{Id: payload.AmenityId},
 	}
 
-	err := app.repository.Villas.Create(ctx, newVilla)
+	err := app.repository.Villas.CreateVillaWithAmenity(ctx, newVilla)
 	if err != nil {
 		for _, image := range images {
 			helpers.RemoveFile(filepath.Join(app.configs.upload.baseDir, "villas", image))
@@ -149,41 +185,10 @@ func (app *application) UpdateVillaHandler(w http.ResponseWriter, r *http.Reques
 
 	villa := GetVillaFromContext(r)
 
-	// huh ?
-	if payload.Name != nil {
-		villa.Name = *payload.Name
-	}
+	payload.Apply(villa)
 
 	if images != nil {
 		villa.ImageUrls = imagesUpdated
-	}
-
-	if payload.Description != nil {
-		villa.Description = *payload.Description
-	}
-
-	if payload.Baths != nil {
-		villa.Baths = *payload.Baths
-	}
-
-	if payload.Bedrooms != nil {
-		villa.Bedrooms = *payload.Bedrooms
-	}
-
-	if payload.Price != nil {
-		villa.Price = *payload.Price
-	}
-
-	if payload.MinGuest != nil {
-		villa.MinGuest = *payload.MinGuest
-	}
-
-	if payload.CategoryId != nil {
-		villa.CategoryId = *payload.CategoryId
-	}
-
-	if payload.LocationId != nil {
-		villa.LocationId = *payload.LocationId
 	}
 
 	if err := app.repository.Villas.Update(ctx, villa); err != nil {
