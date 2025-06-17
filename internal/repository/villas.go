@@ -12,21 +12,21 @@ type VillasRepository struct {
 }
 
 type Villa struct {
-	Id          int              `json:"id"`
-	Name        string           `json:"name"`
-	Description string           `json:"description"`
-	CategoryId  int              `json:"category_id"`
-	LocationId  int              `json:"location_id"`
-	Category    SelectedCategory `json:"category"`
-	Location    SelectedLocation `json:"location"`
-	Amenity     SelectedAmenity  `json:"amentiy"`
-	MinGuest    int              `json:"min_guest"`
-	Bedrooms    int              `json:"bedrooms"`
-	Price       float64          `json:"price"`
-	Baths       int              `json:"baths"`
-	ImageUrls   []string         `json:"image_urls"`
-	CreatedAt   string           `json:"created_at"`
-	UpdateAt    string           `json:"updated_at"`
+	Id          int               `json:"id"`
+	Name        string            `json:"name"`
+	Description string            `json:"description"`
+	CategoryId  int               `json:"category_id"`
+	LocationId  int               `json:"location_id"`
+	Category    SelectedCategory  `json:"category"`
+	Location    SelectedLocation  `json:"location"`
+	Amenity     []SelectedAmenity `json:"amentiy"`
+	MinGuest    int               `json:"min_guest"`
+	Bedrooms    int               `json:"bedrooms"`
+	Price       float64           `json:"price"`
+	Baths       int               `json:"baths"`
+	ImageUrls   []string          `json:"image_urls"`
+	CreatedAt   string            `json:"created_at"`
+	UpdateAt    string            `json:"updated_at"`
 }
 
 func (v *VillasRepository) Create(ctx context.Context, tx *sql.Tx, villa *Villa) (int64, error) {
@@ -97,8 +97,10 @@ func (v *VillasRepository) CreateVillaWithAmenity(ctx context.Context, payload *
 			return err
 		}
 
-		if err := v.CreateVillasAmenities(ctx, tx, int(villaId), payload.Amenity.Id); err != nil {
-			return err
+		for _, amenity := range payload.Amenity {
+			if err := v.CreateVillasAmenities(ctx, tx, int(villaId), amenity.Id); err != nil {
+				return err
+			}
 		}
 
 		return nil
@@ -122,10 +124,15 @@ func (v *VillasRepository) GetById(ctx context.Context, id int) (*Villa, error) 
 		c.name,
 		l.id,
 		l.area,
+		a.id,
+		a.name as amenity_name,
+		t.name as type_amenity,
 		v.created_at,
 		v.updated_at
 	FROM
     	villas v LEFT JOIN categories c ON v.category_id = c.id LEFT JOIN locations l ON v.location_id = l.id
+		LEFT JOIN villas_amenities va ON va.villa_id = v.id LEFT JOIN amenities a ON va.amenity_id = a.id
+		LEFT JOIN types t ON t.id = a.type_id
 		WHERE v.id = ?`
 
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
@@ -135,31 +142,50 @@ func (v *VillasRepository) GetById(ctx context.Context, id int) (*Villa, error) 
 
 	rowUrls := []uint8{}
 
-	err := v.db.QueryRowContext(ctx, query, id).Scan(
-		&villa.Id,
-		&villa.Name,
-		&villa.Description,
-		&villa.CategoryId,
-		&villa.LocationId,
-		&villa.MinGuest,
-		&villa.Bedrooms,
-		&villa.Baths,
-		&villa.Price,
-		&rowUrls,
-		&villa.Category.Id,
-		&villa.Category.Name,
-		&villa.Location.Id,
-		&villa.Location.Area,
-		&villa.CreatedAt,
-		&villa.UpdateAt,
-	)
-
+	rows, err := v.db.QueryContext(ctx, query, id)
 	if err != nil {
 		switch err {
 		case sql.ErrNoRows:
 			return nil, ErrNoRows
 		default:
 			return nil, err
+		}
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		amenity := &SelectedAmenity{}
+
+		err := rows.Scan(
+			&villa.Id,
+			&villa.Name,
+			&villa.Description,
+			&villa.CategoryId,
+			&villa.LocationId,
+			&villa.MinGuest,
+			&villa.Bedrooms,
+			&villa.Baths,
+			&villa.Price,
+			&rowUrls,
+			&villa.Category.Id,
+			&villa.Category.Name,
+			&villa.Location.Id,
+			&villa.Location.Area,
+			&amenity.Id,
+			&amenity.Name,
+			&amenity.Type,
+			&villa.CreatedAt,
+			&villa.UpdateAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		// if the row exist, just append the amenity
+		if villa.Id != 0 {
+			villa.Amenity = append(villa.Amenity, *amenity)
 		}
 	}
 
@@ -171,7 +197,6 @@ func (v *VillasRepository) GetById(ctx context.Context, id int) (*Villa, error) 
 	return villa, nil
 }
 
-// TODO: SHOULD RETURN AMANITIES
 func (v *VillasRepository) GetVillas(ctx context.Context) ([]*Villa, error) {
 	query := `
 	SELECT
@@ -190,12 +215,14 @@ func (v *VillasRepository) GetVillas(ctx context.Context) ([]*Villa, error) {
 		l.id,
 		l.area,
 		a.id,
-		a.name,
+		a.name as amenity_name,
+		t.name as type_amenity,
 		v.created_at,
 		v.updated_at
 	FROM
     	villas v LEFT JOIN categories c ON v.category_id = c.id LEFT JOIN locations l ON v.location_id = l.id
 		LEFT JOIN villas_amenities va ON v.id = va.villa_id LEFT JOIN amenities a ON va.amenity_id = a.id
+		LEFT JOIN types t ON t.id = a.type_id
 		`
 
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
@@ -206,13 +233,18 @@ func (v *VillasRepository) GetVillas(ctx context.Context) ([]*Villa, error) {
 		return nil, err
 	}
 
+	defer rows.Close()
+
 	villas := []*Villa{}
+
+	villaMap := make(map[int]*Villa)
 
 	for rows.Next() {
 		villa := &Villa{}
 
-		rowUrls := []uint8{}
+		amenity := &SelectedAmenity{}
 
+		rowUrls := []uint8{}
 		err := rows.Scan(
 			&villa.Id,
 			&villa.Name,
@@ -228,8 +260,9 @@ func (v *VillasRepository) GetVillas(ctx context.Context) ([]*Villa, error) {
 			&villa.Category.Name,
 			&villa.Location.Id,
 			&villa.Location.Area,
-			&villa.Amenity.Id,
-			&villa.Amenity.Name,
+			&amenity.Id,
+			&amenity.Name,
+			&amenity.Type,
 			&villa.CreatedAt,
 			&villa.UpdateAt,
 		)
@@ -243,7 +276,18 @@ func (v *VillasRepository) GetVillas(ctx context.Context) ([]*Villa, error) {
 			return nil, err
 		}
 
-		villas = append(villas, villa)
+		// if the row not exist add not the map
+		if _, ok := villaMap[villa.Id]; !ok {
+			villaMap[villa.Id] = villa
+		}
+
+		// update the amenity with the result of the amenity row
+		villaMap[villa.Id].Amenity = append(villaMap[villa.Id].Amenity, *amenity)
+	}
+
+	// convert the map to slice
+	for _, val := range villaMap {
+		villas = append(villas, val)
 	}
 
 	return villas, nil

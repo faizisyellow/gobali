@@ -20,9 +20,9 @@ type Amenity struct {
 }
 
 type SelectedAmenity struct {
-	Id   int          `json:"id"`
-	Name string       `json:"name"`
-	Type SelectedType `json:"type"`
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+	Type string `json:"type_name"`
 }
 
 func (a *AmenitiesRepository) Create(ctx context.Context, name string, typeId int) error {

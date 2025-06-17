@@ -22,7 +22,7 @@ type CreateVillaProp struct {
 	Bedrooms    int     `json:"bedrooms" validate:"required,min=1"`
 	Price       float64 `json:"price" validate:"required,min=1"`
 	Baths       int     `json:"baths" validate:"required,min=1"`
-	AmenityId   int     `json:"amenity_id"`
+	AmenityId   []int   `json:"amenity_id"`
 	LocationId  int     `json:"location_id"`
 	CategoryId  int     `json:"category_id"`
 }
@@ -79,7 +79,7 @@ func (u *UpdateVillaPayload) Apply(villa *repository.Villa) {
 // @Accept			mpfd
 // @Param			thumbnail	formData	file	true	"Image file"
 // @Param			others		formData	file	false	"Image file"
-// @Param			properties	formData	string	true	"CreateVillaProp JSON string"	example({"name":"villa name","description":"villa description","min_guest":1,"bedrooms":1,"price":25,"location_id":3,"category_id":2,"baths":1,"amenity_id":4})
+// @Param			properties	formData	string	true	"CreateVillaProp JSON string"	example({"name":"villa name","description":"villa description","min_guest":1,"bedrooms":1,"price":25,"location_id":3,"category_id":2,"baths":1,"amenity_id":[4]})
 // @Success		201			{object}	main.jsonResponse.envelope{data=string}
 // @Success		400			{object}	main.WriteJSONError.envelope
 // @Failure		404			{object}	main.WriteJSONError.envelope
@@ -110,6 +110,12 @@ func (app *application) CreateVillaHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	var amenity = []repository.SelectedAmenity{}
+
+	for _, id := range payload.AmenityId {
+		amenity = append(amenity, repository.SelectedAmenity{Id: id})
+	}
+
 	newVilla := &repository.Villa{
 		Name:        payload.Name,
 		Description: payload.Description,
@@ -120,7 +126,7 @@ func (app *application) CreateVillaHandler(w http.ResponseWriter, r *http.Reques
 		ImageUrls:   images,
 		CategoryId:  payload.CategoryId,
 		LocationId:  payload.LocationId,
-		Amenity:     repository.SelectedAmenity{Id: payload.AmenityId},
+		Amenity:     amenity,
 	}
 
 	err := app.repository.Villas.CreateVillaWithAmenity(ctx, newVilla)

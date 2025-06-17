@@ -1323,7 +1323,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "example": "{\"name\":\"villa name\",\"description\":\"villa description\",\"min_guest\":1,\"bedrooms\":1,\"price\":25,\"location_id\":3,\"category_id\":2,\"baths\":1,\"amenity_id\":4}",
+                        "example": "{\"name\":\"villa name\",\"description\":\"villa description\",\"min_guest\":1,\"bedrooms\":1,\"price\":25,\"location_id\":3,\"category_id\":2,\"baths\":1,\"amenity_id\":[4]}",
                         "description": "CreateVillaProp JSON string",
                         "name": "properties",
                         "in": "formData",
@@ -1818,9 +1818,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/repository.SelectedType"
                 }
             }
         },
@@ -1875,7 +1872,10 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "amentiy": {
-                    "$ref": "#/definitions/repository.SelectedAmenity"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repository.SelectedAmenity"
+                    }
                 },
                 "baths": {
                     "type": "integer"

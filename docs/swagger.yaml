@@ -188,8 +188,6 @@ definitions:
         type: integer
       name:
         type: string
-      type:
-        $ref: '#/definitions/repository.SelectedType'
     type: object
   repository.SelectedCategory:
     properties:
@@ -224,7 +222,9 @@ definitions:
   repository.Villa:
     properties:
       amentiy:
-        $ref: '#/definitions/repository.SelectedAmenity'
+        items:
+          $ref: '#/definitions/repository.SelectedAmenity'
+        type: array
       baths:
         type: integer
       bedrooms:
@@ -1062,7 +1062,7 @@ paths:
         name: others
         type: file
       - description: CreateVillaProp JSON string
-        example: '{"name":"villa name","description":"villa description","min_guest":1,"bedrooms":1,"price":25,"location_id":3,"category_id":2,"baths":1,"amenity_id":4}'
+        example: '{"name":"villa name","description":"villa description","min_guest":1,"bedrooms":1,"price":25,"location_id":3,"category_id":2,"baths":1,"amenity_id":[4]}'
         in: formData
         name: properties
         required: true
