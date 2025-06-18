@@ -29,12 +29,13 @@ type application struct {
 }
 
 type config struct {
-	addr      string
-	env       string
-	db        dbConfig
-	mail      mailConfig
-	upload    uploadConfig
-	clientURL string
+	addr       string
+	env        string
+	db         dbConfig
+	mail       mailConfig
+	upload     uploadConfig
+	clientURL  string
+	bookingExp time.Duration
 }
 
 type uploadConfig struct {
@@ -133,6 +134,18 @@ func (app *application) mount() http.Handler {
 				r.Put("/", app.UploadImagesMiddleware(app.UpdateVillaHandler, "villas"))
 				r.Get("/", app.GetVillaByIdHandler)
 				r.Delete("/", app.DeleteVillaByIdHandler)
+			})
+		})
+
+		r.Route("/bookings", func(r chi.Router) {
+			r.Get("/", app.GetBookingsHandler)
+			r.Post("/", app.CreateBookingHandler)
+
+			r.Route("/{bookingID}", func(r chi.Router) {
+				r.Use(app.BookingContentMiddleware)
+
+				r.Get("/", app.GetBookingByIdHandler)
+				r.Delete("/", app.DeleteBookingHandler)
 			})
 		})
 

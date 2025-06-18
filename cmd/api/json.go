@@ -14,6 +14,10 @@ import (
 var Validate *validator.Validate
 var ErrNoField = errors.New("field is required")
 
+type Responser interface {
+	Include(...string) (any, error)
+}
+
 func init() {
 	Validate = validator.New(validator.WithRequiredStructEnabled())
 

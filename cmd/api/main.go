@@ -49,12 +49,13 @@ func main() {
 	}
 
 	conf := config{
-		addr:      e.GetString("ADDRESS", "localhost:8080"),
-		env:       e.GetString("ENVIRONMENT", "Development"),
-		db:        dbConfig{addr: e.GetString("DB_ADDRESS", "nil"), maxOpenConn: 30, maxIdleConn: 30, maxIdleTime: "15m"},
-		mail:      mailConf,
-		clientURL: e.GetString("CLIENT_URL", "localhost:5173"),
-		upload:    uploadConfig{baseDir: "./internal/assets/"},
+		addr:       e.GetString("ADDRESS", "localhost:8080"),
+		env:        e.GetString("ENVIRONMENT", "Development"),
+		db:         dbConfig{addr: e.GetString("DB_ADDRESS", "nil"), maxOpenConn: 30, maxIdleConn: 30, maxIdleTime: "15m"},
+		mail:       mailConf,
+		clientURL:  e.GetString("CLIENT_URL", "localhost:5173"),
+		upload:     uploadConfig{baseDir: "./internal/assets/"},
+		bookingExp: 30 * time.Minute,
 	}
 
 	db, err := db.New(conf.db.addr, conf.db.maxOpenConn, conf.db.maxIdleConn, conf.db.maxIdleTime)

@@ -30,6 +30,43 @@ definitions:
       type_id:
         type: integer
     type: object
+  main.CreateBookingPayload:
+    properties:
+      end_at:
+        type: string
+      first_name:
+        minLength: 1
+        type: string
+      last_name:
+        minLength: 1
+        type: string
+      start_at:
+        type: string
+      total_price:
+        minimum: 1
+        type: integer
+      user_id:
+        type: integer
+      villa_id:
+        type: integer
+      villa_location:
+        type: string
+      villa_name:
+        type: string
+      villa_price:
+        type: integer
+    required:
+    - end_at
+    - first_name
+    - last_name
+    - start_at
+    - total_price
+    - user_id
+    - villa_id
+    - villa_location
+    - villa_name
+    - villa_price
+    type: object
   main.CreateCategoryPayload:
     properties:
       name:
@@ -160,6 +197,39 @@ definitions:
       updated_at:
         type: string
     type: object
+  repository.Booking:
+    properties:
+      created_at:
+        type: string
+      end_at:
+        type: string
+      expire_at:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      last_name:
+        type: string
+      start_at:
+        type: string
+      status:
+        type: string
+      total_price:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+      villa_id:
+        type: integer
+      villa_location:
+        type: string
+      villa_name:
+        type: string
+      villa_price:
+        type: integer
+    type: object
   repository.Category:
     properties:
       created_at:
@@ -187,6 +257,8 @@ definitions:
       id:
         type: integer
       name:
+        type: string
+      type_name:
         type: string
     type: object
   repository.SelectedCategory:
@@ -463,6 +535,126 @@ paths:
       summary: Register user
       tags:
       - Auth
+  /bookings:
+    get:
+      consumes:
+      - application/json
+      description: Get All Bookings
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/repository.Booking'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Get Bookings
+      tags:
+      - Bookings
+    post:
+      consumes:
+      - application/json
+      description: Create Booking
+      parameters:
+      - description: payload create booking
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.CreateBookingPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Create Booking
+      tags:
+      - Bookings
+  /bookings/{Id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Booking By ID
+      parameters:
+      - description: Booking ID
+        in: path
+        name: Id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Delete Booking
+      tags:
+      - Bookings
+    get:
+      consumes:
+      - application/json
+      description: Get Booking By ID
+      parameters:
+      - description: Booking ID
+        in: path
+        name: Id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/repository.Booking'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Get Booking
+      tags:
+      - Bookings
   /categories:
     get:
       description: Get all categories

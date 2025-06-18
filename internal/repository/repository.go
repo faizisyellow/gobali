@@ -69,8 +69,12 @@ type Repository struct {
 		Delete(ctx context.Context, id int) error
 		Update(ctx context.Context, villa *Villa) error
 	}
-	VillasAmenities interface {
-		Create(ctx context.Context, villaAmenity *VillasAmenities) error
+	Bookings interface {
+		Create(context.Context, *Booking, time.Duration) error
+		GetById(context.Context, int) (*Booking, error)
+		GetBookings(context.Context) ([]*Booking, error)
+		Delete(context.Context, int) error
+		GetBookingVillaByDate(ctx context.Context, startAt, endAt string, villaId int) (*Booking, error)
 	}
 }
 
@@ -83,6 +87,7 @@ func NewRepository(db *sql.DB) Repository {
 		Types:      &TypesRepository{db},
 		Amenities:  &AmenitiesRepository{db},
 		Villas:     &VillasRepository{db},
+		Bookings:   &BookingsRepository{db},
 	}
 }
 
