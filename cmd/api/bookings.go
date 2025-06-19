@@ -35,7 +35,7 @@ type UpdateBookingStatus struct {
 }
 
 const (
-	StatusDefault StatusBooking = iota
+	StatusOpen StatusBooking = iota
 	StatusCheckIn
 	StatusComplete
 )
@@ -46,7 +46,7 @@ var (
 )
 
 var Status = map[StatusBooking]string{
-	StatusDefault:  "open",
+	StatusOpen:     "open",
 	StatusCheckIn:  "check_in",
 	StatusComplete: "complete",
 }
@@ -134,7 +134,7 @@ func (app *application) CheckOutHandler(w http.ResponseWriter, r *http.Request) 
 	booking := GetBookingFromContext(r)
 
 	switch booking.Status {
-	case Status[StatusDefault]:
+	case Status[StatusOpen]:
 		app.badRequestResponse(w, r, fmt.Errorf("need to check in first"))
 		return
 	case Status[StatusComplete]:
