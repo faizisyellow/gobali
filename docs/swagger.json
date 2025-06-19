@@ -1984,7 +1984,7 @@
             "properties": {
                 "area": {
                     "type": "string",
-                    "minLength": 5
+                    "minLength": 3
                 }
             }
         },
@@ -2113,7 +2113,7 @@
             "properties": {
                 "area": {
                     "type": "string",
-                    "minLength": 5
+                    "minLength": 3
                 }
             }
         },

@@ -1987,7 +1987,7 @@ const docTemplate = `{
             "properties": {
                 "area": {
                     "type": "string",
-                    "minLength": 5
+                    "minLength": 3
                 }
             }
         },
@@ -2116,7 +2116,7 @@ const docTemplate = `{
             "properties": {
                 "area": {
                     "type": "string",
-                    "minLength": 5
+                    "minLength": 3
                 }
             }
         },

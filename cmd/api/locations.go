@@ -10,7 +10,7 @@ import (
 )
 
 type CreateLocationPayload struct {
-	Area string `json:"area" validate:"required,min=5"`
+	Area string `json:"area" validate:"required,min=3"`
 }
 
 type LocationResponse struct {

@@ -102,7 +102,13 @@ func (t *TypesRepository) Update(ctx context.Context, ty *Type) error {
 
 	_, err := t.db.ExecContext(ctx, query, &ty.Name, &ty.Id)
 	if err != nil {
-		return err
+		duplicateKey := "Error 1062"
+		switch {
+		case strings.Contains(err.Error(), duplicateKey):
+			return ErrDuplicateTypes
+		default:
+			return err
+		}
 	}
 
 	return nil

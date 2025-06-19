@@ -98,7 +98,13 @@ func (l *LocationsRepository) Update(ctx context.Context, location *Location) er
 
 	_, err := l.db.ExecContext(ctx, query, &location.Area, &location.Id)
 	if err != nil {
-		return err
+		duplicateKey := "Error 1062"
+		switch {
+		case strings.Contains(err.Error(), duplicateKey):
+			return ErrDuplicateLocation
+		default:
+			return err
+		}
 	}
 
 	return nil

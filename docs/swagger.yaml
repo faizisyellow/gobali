@@ -86,7 +86,7 @@ definitions:
   main.CreateLocationPayload:
     properties:
       area:
-        minLength: 5
+        minLength: 3
         type: string
     required:
     - area
@@ -173,7 +173,7 @@ definitions:
   main.UpdateLocationPayload:
     properties:
       area:
-        minLength: 5
+        minLength: 3
         type: string
     required:
     - area
