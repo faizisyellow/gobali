@@ -655,6 +655,40 @@ paths:
       summary: Get Booking
       tags:
       - Bookings
+  /bookings/{Id}/payments:
+    post:
+      consumes:
+      - application/json
+      description: Payment Booking By ID
+      parameters:
+      - description: Booking ID
+        in: path
+        name: Id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Payment Booking
+      tags:
+      - Bookings
   /categories:
     get:
       description: Get all categories

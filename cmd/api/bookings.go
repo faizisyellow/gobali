@@ -25,22 +25,6 @@ type CreateBookingPayload struct {
 	LastName      string `json:"last_name" validate:"required,min=1"`
 }
 
-type BookingsResponse struct {
-	Id            int    `json:"id"`
-	VillaId       int    `json:"villa_id"`
-	VillaName     string `json:"villa_name"`
-	VillaLocation string `json:"villa_location"`
-	// VillaPrice    int    `json:"villa_price"`
-	StartAt    string `json:"start_at"`
-	EndAt      string `json:"end_at"`
-	TotalPrice int    `json:"total_price"`
-	UserId     int    `json:"user_id"`
-	FirstName  string `json:"first_name"`
-	LastName   string `json:"last_name"`
-	ExpireAt   string `json:"expire_at"`
-	CreatedAt  string `json:"created_at"`
-}
-
 var (
 	ErrAlreadyBooked error      = errors.New("this villa already booked between these days")
 	bookingctx       bookingkey = "bookings"
@@ -117,7 +101,6 @@ func (app *application) CreateBookingHandler(w http.ResponseWriter, r *http.Requ
 // @Failure		500	{object}	main.WriteJSONError.envelope
 // @Router			/bookings [get]
 func (app *application) GetBookingsHandler(w http.ResponseWriter, r *http.Request) {
-	var bookingsRes []*repository.Booking
 
 	bookings, err := app.repository.Bookings.GetBookings(r.Context())
 	if err != nil {
@@ -125,27 +108,7 @@ func (app *application) GetBookingsHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	for _, booking := range bookings {
-		booking = booking.Include("Id",
-			"CreatedAt",
-			"EndAt",
-			"ExpiredAt",
-			"FirstName",
-			"LastName",
-			"StartAt",
-			"TotalPrice",
-			"UserId",
-			"VillaId",
-			"VillaLocation",
-			"VillaName",
-			// "VillaPrice",
-		)
-
-		// TODO: FIX RESPONSE
-		bookingsRes = append(bookingsRes, booking)
-	}
-
-	if err := app.jsonResponse(w, http.StatusOK, bookingsRes); err != nil {
+	if err := app.jsonResponse(w, http.StatusOK, bookings); err != nil {
 		app.internalServerError(w, r, err)
 		return
 	}
@@ -193,6 +156,19 @@ func (app *application) DeleteBookingHandler(w http.ResponseWriter, r *http.Requ
 		app.internalServerError(w, r, err)
 		return
 	}
+}
+
+// @Summary		Payment Booking
+// @Description	Payment Booking By ID
+// @Tags			Bookings
+// @Produce		json
+// @Accept			json
+// @Param			Id	path	int	true	"Booking ID"
+// @Success		201 {object}  main.jsonResponse.envelope{data=string}
+// @Failure		404	{object}	main.WriteJSONError.envelope
+// @Failure		500	{object}	main.WriteJSONError.envelope
+// @Router			/bookings/{Id}/payments [post]
+func (app *application) PaymentSessionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) BookingContentMiddleware(next http.Handler) http.Handler {

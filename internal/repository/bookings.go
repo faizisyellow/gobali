@@ -4,8 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"time"
-
-	"github.com/faizisyellow/gobali/internal/helpers"
 )
 
 type BookingsRepository struct {
@@ -28,13 +26,6 @@ type Booking struct {
 	ExpireAt      string  `json:"expire_at"`
 	CreatedAt     string  `json:"created_at"`
 	UpdatedAt     *string `json:"updated_at"`
-}
-
-func (b *Booking) Include(fields ...string) *Booking {
-
-	newBooking := helpers.CreateNewStructByReflect(b, fields...)
-
-	return newBooking
 }
 
 func (b *BookingsRepository) Create(ctx context.Context, newBooking *Booking, exp time.Duration) error {

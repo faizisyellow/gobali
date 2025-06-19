@@ -145,6 +145,7 @@ func (app *application) mount() http.Handler {
 				r.Use(app.BookingContentMiddleware)
 
 				r.Get("/", app.GetBookingByIdHandler)
+				r.Post("/payments", app.PaymentSessionHandler)
 				r.Delete("/", app.DeleteBookingHandler)
 			})
 		})
