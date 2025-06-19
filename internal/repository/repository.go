@@ -70,7 +70,8 @@ type Repository struct {
 		Update(ctx context.Context, villa *Villa) error
 	}
 	Bookings interface {
-		Create(context.Context, *Booking, time.Duration) error
+		UpdateBookingStatus(ctx context.Context, bookId int, status string) error
+		Create(context.Context, *Booking) error
 		GetById(context.Context, int) (*Booking, error)
 		GetBookings(context.Context) ([]*Booking, error)
 		Delete(context.Context, int) error

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -11,6 +12,8 @@ import (
 )
 
 type bookingkey string
+
+type StatusBooking int
 
 type CreateBookingPayload struct {
 	VillaId       int    `json:"villa_id" validate:"required"`
@@ -23,12 +26,132 @@ type CreateBookingPayload struct {
 	UserId        int    `json:"user_id" validate:"required"`
 	FirstName     string `json:"first_name" validate:"required,min=1"`
 	LastName      string `json:"last_name" validate:"required,min=1"`
+	Email         string `json:"email" validate:"required,min=1"`
+	Guest         int    `json:"guest" validate:"required,min=1"`
 }
+
+type UpdateBookingStatus struct {
+	Status string `json:"status" validate:"required"`
+}
+
+const (
+	StatusDefault StatusBooking = iota
+	StatusCheckIn
+	StatusComplete
+)
 
 var (
 	ErrAlreadyBooked error      = errors.New("this villa already booked between these days")
 	bookingctx       bookingkey = "bookings"
 )
+
+var Status = map[StatusBooking]string{
+	StatusDefault:  "open",
+	StatusCheckIn:  "check_in",
+	StatusComplete: "complete",
+}
+
+// @Summary		Check in Booking
+// @Description	Check in Booking By ID
+// @Tags			Bookings
+// @Produce		json
+// @Accept			json
+// @Param			payload	body		UpdateBookingStatus	true	"status booking"
+// @Param			Id		path		int					true	"booking id"
+// @Success		201		{object}	main.jsonResponse.envelope{data=string}
+// @Success		400		{object}	main.WriteJSONError.envelope
+// @Failure		500		{object}	main.WriteJSONError.envelope
+// @Router			/bookings/{Id}/check-in [patch]
+func (app *application) CheckInHandler(w http.ResponseWriter, r *http.Request) {
+	payload := &UpdateBookingStatus{}
+
+	if err := readJSON(w, r, payload); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	if err := Validate.Struct(payload); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	if payload.Status != Status[StatusCheckIn] {
+		app.badRequestResponse(w, r, fmt.Errorf("status is check_in"))
+		return
+	}
+
+	booking := GetBookingFromContext(r)
+
+	switch booking.Status {
+	case Status[StatusCheckIn]:
+		app.badRequestResponse(w, r, fmt.Errorf("already check in"))
+		return
+	case Status[StatusComplete]:
+		app.badRequestResponse(w, r, fmt.Errorf("can not check in because, already check out"))
+		return
+	}
+
+	if err := app.repository.Bookings.UpdateBookingStatus(r.Context(), booking.Id, payload.Status); err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+
+	if err := app.jsonResponse(w, http.StatusCreated, "check in successfully"); err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+}
+
+// @Summary		Check out Booking
+// @Description	Check out Booking By ID
+// @Tags			Bookings
+// @Produce		json
+// @Accept			json
+// @Param			payload	body		UpdateBookingStatus	true	"status booking"
+// @Param			Id		path		int					true	"booking id"
+// @Success		201		{object}	main.jsonResponse.envelope{data=string}
+// @Success		400		{object}	main.WriteJSONError.envelope
+// @Failure		500		{object}	main.WriteJSONError.envelope
+// @Router			/bookings/{Id}/check-out [patch]
+func (app *application) CheckOutHandler(w http.ResponseWriter, r *http.Request) {
+	payload := &UpdateBookingStatus{}
+
+	if err := readJSON(w, r, payload); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	if err := Validate.Struct(payload); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	if payload.Status != Status[StatusComplete] {
+		app.badRequestResponse(w, r, fmt.Errorf("status is complete"))
+		return
+	}
+
+	booking := GetBookingFromContext(r)
+
+	switch booking.Status {
+	case Status[StatusDefault]:
+		app.badRequestResponse(w, r, fmt.Errorf("need to check in first"))
+		return
+	case Status[StatusComplete]:
+		app.badRequestResponse(w, r, fmt.Errorf("already checkout"))
+		return
+	}
+
+	if err := app.repository.Bookings.UpdateBookingStatus(r.Context(), booking.Id, payload.Status); err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+
+	if err := app.jsonResponse(w, http.StatusCreated, "check out successfully"); err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+}
 
 // @Summary		Create Booking
 // @Description	Create Booking
@@ -75,8 +198,10 @@ func (app *application) CreateBookingHandler(w http.ResponseWriter, r *http.Requ
 		newBook.UserId = payload.UserId
 		newBook.FirstName = payload.FirstName
 		newBook.LastName = payload.LastName
+		newBook.Email = payload.Email
+		newBook.Guest = payload.Guest
 
-		if err := app.repository.Bookings.Create(ctx, newBook, app.configs.bookingExp); err != nil {
+		if err := app.repository.Bookings.Create(ctx, newBook); err != nil {
 			app.internalServerError(w, r, err)
 			return
 		}
@@ -156,19 +281,6 @@ func (app *application) DeleteBookingHandler(w http.ResponseWriter, r *http.Requ
 		app.internalServerError(w, r, err)
 		return
 	}
-}
-
-// @Summary		Payment Booking
-// @Description	Payment Booking By ID
-// @Tags			Bookings
-// @Produce		json
-// @Accept			json
-// @Param			Id	path	int	true	"Booking ID"
-// @Success		201 {object}  main.jsonResponse.envelope{data=string}
-// @Failure		404	{object}	main.WriteJSONError.envelope
-// @Failure		500	{object}	main.WriteJSONError.envelope
-// @Router			/bookings/{Id}/payments [post]
-func (app *application) PaymentSessionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) BookingContentMiddleware(next http.Handler) http.Handler {

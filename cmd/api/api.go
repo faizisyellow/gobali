@@ -29,13 +29,12 @@ type application struct {
 }
 
 type config struct {
-	addr       string
-	env        string
-	db         dbConfig
-	mail       mailConfig
-	upload     uploadConfig
-	clientURL  string
-	bookingExp time.Duration
+	addr      string
+	env       string
+	db        dbConfig
+	mail      mailConfig
+	upload    uploadConfig
+	clientURL string
 }
 
 type uploadConfig struct {
@@ -145,7 +144,8 @@ func (app *application) mount() http.Handler {
 				r.Use(app.BookingContentMiddleware)
 
 				r.Get("/", app.GetBookingByIdHandler)
-				r.Post("/payments", app.PaymentSessionHandler)
+				r.Patch("/check-in", app.CheckInHandler)
+				r.Patch("/check-out", app.CheckOutHandler)
 				r.Delete("/", app.DeleteBookingHandler)
 			})
 		})

@@ -535,9 +535,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/bookings/{Id}/payments": {
-            "post": {
-                "description": "Payment Booking By ID",
+        "/bookings/{Id}/check-in": {
+            "patch": {
+                "description": "Check in Booking By ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -547,11 +547,20 @@ const docTemplate = `{
                 "tags": [
                     "Bookings"
                 ],
-                "summary": "Payment Booking",
+                "summary": "Check in Booking",
                 "parameters": [
                     {
+                        "description": "status booking",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.UpdateBookingStatus"
+                        }
+                    },
+                    {
                         "type": "integer",
-                        "description": "Booking ID",
+                        "description": "booking id",
                         "name": "Id",
                         "in": "path",
                         "required": true
@@ -576,8 +585,73 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/main.WriteJSONError.envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/main.WriteJSONError.envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/bookings/{Id}/check-out": {
+            "patch": {
+                "description": "Check out Booking By ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Check out Booking",
+                "parameters": [
+                    {
+                        "description": "status booking",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.UpdateBookingStatus"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "booking id",
+                        "name": "Id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/main.jsonResponse.envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/main.WriteJSONError.envelope"
                         }
@@ -1836,8 +1910,10 @@ const docTemplate = `{
         "main.CreateBookingPayload": {
             "type": "object",
             "required": [
+                "email",
                 "end_at",
                 "first_name",
+                "guest",
                 "last_name",
                 "start_at",
                 "total_price",
@@ -1848,12 +1924,20 @@ const docTemplate = `{
                 "villa_price"
             ],
             "properties": {
+                "email": {
+                    "type": "string",
+                    "minLength": 1
+                },
                 "end_at": {
                     "type": "string"
                 },
                 "first_name": {
                     "type": "string",
                     "minLength": 1
+                },
+                "guest": {
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "last_name": {
                     "type": "string",
@@ -2001,6 +2085,17 @@ const docTemplate = `{
                 }
             }
         },
+        "main.UpdateBookingStatus": {
+            "type": "object",
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "main.UpdateCategoryPayload": {
             "type": "object",
             "required": [
@@ -2083,14 +2178,17 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "end_at": {
+                "email": {
                     "type": "string"
                 },
-                "expire_at": {
+                "end_at": {
                     "type": "string"
                 },
                 "first_name": {
                     "type": "string"
+                },
+                "guest": {
+                    "type": "integer"
                 },
                 "id": {
                     "type": "integer"
