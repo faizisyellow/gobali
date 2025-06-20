@@ -51,8 +51,6 @@ definitions:
       total_price:
         minimum: 1
         type: integer
-      user_id:
-        type: integer
       villa_id:
         type: integer
       villa_location:
@@ -69,7 +67,6 @@ definitions:
     - last_name
     - start_at
     - total_price
-    - user_id
     - villa_id
     - villa_location
     - villa_name
@@ -994,6 +991,7 @@ paths:
       - Categories
   /health:
     get:
+      description: Check Response
       responses:
         "200":
           description: OK
@@ -1008,6 +1006,11 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
+      summary: Health
+      tags:
+      - Health
   /locations:
     get:
       description: Get All Locations

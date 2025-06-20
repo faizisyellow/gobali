@@ -14,6 +14,7 @@ var (
 	ErrDuplicateLocation     = errors.New("location already exist")
 	ErrDuplicateTypes        = errors.New("types already exist")
 	ErrDuplicateAmenities    = errors.New("amenities already exist")
+	ErrAmenitiesNotExist     = errors.New("amenities not exist")
 	ErrTypeNotExist          = errors.New("type not exist")
 	ErrCatOrLocNotExist      = errors.New("category or location not exist")
 	ErrNoRows                = errors.New("records not found")

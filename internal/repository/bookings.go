@@ -41,8 +41,7 @@ func (b *BookingsRepository) Create(ctx context.Context, newBooking *Booking) er
 	end_at,
 	total_price,
 	email,
-	guest,
-	) 
+	guest) 
 	VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`
 
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)

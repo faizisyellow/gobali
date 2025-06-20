@@ -67,6 +67,10 @@ func main() {
 				sub:        "user",
 				exp:        time.Hour * 24 * 3,
 			},
+			basicConfig{
+				username: e.GetString("DEV_AUTH_USERNAME", ""),
+				password: e.GetString("DEV_AUTH_PASSWORD", ""),
+			},
 		},
 	}
 

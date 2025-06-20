@@ -72,20 +72,20 @@ func (u *UpdateVillaPayload) Apply(villa *repository.Villa) {
 	}
 }
 
-//	@Summary		Create Villa
-//	@Description	Create Villa
-//	@Tags			Villas
-//	@Produce		json
-//	@Accept			mpfd
-//	@Param			thumbnail	formData	file	true	"Image file"
-//	@Param			others		formData	file	false	"Image file"
-//	@Param			properties	formData	string	true	"CreateVillaProp JSON string"	example({"name":"villa name","description":"villa description","min_guest":1,"bedrooms":1,"price":25,"location_id":3,"category_id":2,"baths":1,"amenity_id":[4]})
-//	@Security		JWT
-//	@Success		201	{object}	main.jsonResponse.envelope{data=string}
-//	@Success		400	{object}	main.WriteJSONError.envelope
-//	@Failure		404	{object}	main.WriteJSONError.envelope
-//	@Failure		500	{object}	main.WriteJSONError.envelope
-//	@Router			/villas [post]
+// @Summary		Create Villa
+// @Description	Create Villa
+// @Tags			Villas
+// @Produce		json
+// @Accept			mpfd
+// @Param			thumbnail	formData	file	true	"Image file"
+// @Param			others		formData	file	false	"Image file"
+// @Param			properties	formData	string	true	"CreateVillaProp JSON string"	example({"name":"villa name","description":"villa description","min_guest":1,"bedrooms":1,"price":25,"location_id":3,"category_id":2,"baths":1,"amenity_id":[4]})
+// @Security		JWT
+// @Success		201	{object}	main.jsonResponse.envelope{data=string}
+// @Success		400	{object}	main.WriteJSONError.envelope
+// @Failure		404	{object}	main.WriteJSONError.envelope
+// @Failure		500	{object}	main.WriteJSONError.envelope
+// @Router			/villas [post]
 func (app *application) CreateVillaHandler(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
@@ -137,7 +137,7 @@ func (app *application) CreateVillaHandler(w http.ResponseWriter, r *http.Reques
 		}
 
 		switch err {
-		case repository.ErrCatOrLocNotExist, repository.ErrDuplicateAmenities:
+		case repository.ErrCatOrLocNotExist, repository.ErrDuplicateAmenities, repository.ErrAmenitiesNotExist:
 			app.badRequestResponse(w, r, err)
 		default:
 			app.internalServerError(w, r, err)
@@ -153,20 +153,20 @@ func (app *application) CreateVillaHandler(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-//	@Summary		Update Villa
-//	@Description	Update Villa by ID
-//	@Tags			Villas
-//	@Produce		json
-//	@Param			ID	path	int	true	"Villa ID"
-//	@Accept			mpfd
-//	@Param			thumbnail	formData	file	false	"Image file"
-//	@Param			others		formData	file	false	"Image file"
-//	@Param			properties	formData	string	false	"Update Villa Props JSON string"	example({"name":"villa name","description":"villa description","min_guest":1,"bedrooms":1,"price":25,"location_id":3,"category_id":2,"baths":1})
-//	@Security		JWT
-//	@Success		201	{object}	main.jsonResponse.envelope{data=string}
-//	@Failure		404	{object}	main.WriteJSONError.envelope
-//	@Failure		500	{object}	main.WriteJSONError.envelope
-//	@Router			/villas/{ID} [PUT]
+// @Summary		Update Villa
+// @Description	Update Villa by ID
+// @Tags			Villas
+// @Produce		json
+// @Param			ID	path	int	true	"Villa ID"
+// @Accept			mpfd
+// @Param			thumbnail	formData	file	false	"Image file"
+// @Param			others		formData	file	false	"Image file"
+// @Param			properties	formData	string	false	"Update Villa Props JSON string"	example({"name":"villa name","description":"villa description","min_guest":1,"bedrooms":1,"price":25,"location_id":3,"category_id":2,"baths":1})
+// @Security		JWT
+// @Success		201	{object}	main.jsonResponse.envelope{data=string}
+// @Failure		404	{object}	main.WriteJSONError.envelope
+// @Failure		500	{object}	main.WriteJSONError.envelope
+// @Router			/villas/{ID} [PUT]
 func (app *application) UpdateVillaHandler(w http.ResponseWriter, r *http.Request) {
 	payload := &UpdateVillaPayload{}
 
@@ -211,15 +211,15 @@ func (app *application) UpdateVillaHandler(w http.ResponseWriter, r *http.Reques
 
 }
 
-//	@Summary		Get Villa
-//	@Description	Get Villa By ID
-//	@Tags			Villas
-//	@Produce		json
-//	@Param			villaID	path		int	true	"Villa ID"
-//	@Success		200		{object}	main.jsonResponse.envelope{data=repository.Villa}
-//	@Failure		404		{object}	main.WriteJSONError.envelope
-//	@Failure		500		{object}	main.WriteJSONError.envelope
-//	@Router			/villas/{villaID} [get]
+// @Summary		Get Villa
+// @Description	Get Villa By ID
+// @Tags			Villas
+// @Produce		json
+// @Param			villaID	path		int	true	"Villa ID"
+// @Success		200		{object}	main.jsonResponse.envelope{data=repository.Villa}
+// @Failure		404		{object}	main.WriteJSONError.envelope
+// @Failure		500		{object}	main.WriteJSONError.envelope
+// @Router			/villas/{villaID} [get]
 func (app *application) GetVillaByIdHandler(w http.ResponseWriter, r *http.Request) {
 
 	villa := GetVillaFromContext(r)
@@ -230,13 +230,13 @@ func (app *application) GetVillaByIdHandler(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-//	@Summary		Get Villa
-//	@Description	Get All Villas
-//	@Tags			Villas
-//	@Produce		json
-//	@Success		200	{object}	main.jsonResponse.envelope{data=[]repository.Villa}
-//	@Failure		500	{object}	main.WriteJSONError.envelope
-//	@Router			/villas [get]
+// @Summary		Get Villa
+// @Description	Get All Villas
+// @Tags			Villas
+// @Produce		json
+// @Success		200	{object}	main.jsonResponse.envelope{data=[]repository.Villa}
+// @Failure		500	{object}	main.WriteJSONError.envelope
+// @Router			/villas [get]
 func (app *application) GetVillasHandler(w http.ResponseWriter, r *http.Request) {
 
 	villas, err := app.repository.Villas.GetVillas(r.Context())
@@ -251,16 +251,16 @@ func (app *application) GetVillasHandler(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-//	@Summary		Delete Villa
-//	@Description	Delete Villa By ID
-//	@Tags			Villas
-//	@Produce		json
-//	@Param			villaID	path	int	true	"Villa ID"
-//	@Security		JWT
-//	@Success		204
-//	@Failure		404	{object}	main.WriteJSONError.envelope
-//	@Failure		500	{object}	main.WriteJSONError.envelope
-//	@Router			/villas/{villaID} [delete]
+// @Summary		Delete Villa
+// @Description	Delete Villa By ID
+// @Tags			Villas
+// @Produce		json
+// @Param			villaID	path	int	true	"Villa ID"
+// @Security		JWT
+// @Success		204
+// @Failure		404	{object}	main.WriteJSONError.envelope
+// @Failure		500	{object}	main.WriteJSONError.envelope
+// @Router			/villas/{villaID} [delete]
 func (app *application) DeleteVillaByIdHandler(w http.ResponseWriter, r *http.Request) {
 
 	villa := GetVillaFromContext(r)
@@ -279,7 +279,7 @@ func (app *application) DeleteVillaByIdHandler(w http.ResponseWriter, r *http.Re
 	}
 }
 
-func (app *application) VillaContentMiddleware(next http.HandlerFunc) http.HandlerFunc {
+func (app *application) VillaContentMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		villaId := chi.URLParam(r, "villaID")
 

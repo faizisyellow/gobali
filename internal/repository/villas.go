@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"strings"
+
+	"github.com/charmbracelet/log"
 )
 
 type VillasRepository struct {
@@ -77,10 +79,15 @@ func (v *VillasRepository) CreateVillasAmenities(ctx context.Context, tx *sql.Tx
 	if err != nil {
 
 		duplicateKey := "Error 1062"
+		notExist := "Error 1452"
 
 		switch {
 		case strings.Contains(err.Error(), duplicateKey):
+			log.Error(err)
 			return ErrDuplicateVillaAmenity
+		case strings.Contains(err.Error(), notExist):
+			log.Error(err)
+			return ErrAmenitiesNotExist
 		default:
 			return err
 		}
@@ -188,6 +195,9 @@ func (v *VillasRepository) GetById(ctx context.Context, id int) (*Villa, error) 
 			villa.Amenity = append(villa.Amenity, *amenity)
 		}
 	}
+
+	// TODO: FIX UNEXPECTED UNMARSHAL
+	log.Info(villa, "sup", "asdsad")
 
 	err = json.Unmarshal(rowUrls, &villa.ImageUrls)
 	if err != nil {

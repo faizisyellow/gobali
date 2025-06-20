@@ -1069,6 +1069,16 @@ const docTemplate = `{
         },
         "/health": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Check Response",
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Health",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2131,7 +2141,6 @@ const docTemplate = `{
                 "last_name",
                 "start_at",
                 "total_price",
-                "user_id",
                 "villa_id",
                 "villa_location",
                 "villa_name",
@@ -2163,9 +2172,6 @@ const docTemplate = `{
                 "total_price": {
                     "type": "integer",
                     "minimum": 1
-                },
-                "user_id": {
-                    "type": "integer"
                 },
                 "villa_id": {
                     "type": "integer"

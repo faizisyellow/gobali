@@ -23,7 +23,6 @@ type CreateBookingPayload struct {
 	StartAt       string `json:"start_at" validate:"required"`
 	EndAt         string `json:"end_at" validate:"required"`
 	TotalPrice    int    `json:"total_price" validate:"required,min=1"`
-	UserId        int    `json:"user_id" validate:"required"`
 	FirstName     string `json:"first_name" validate:"required,min=1"`
 	LastName      string `json:"last_name" validate:"required,min=1"`
 	Email         string `json:"email" validate:"required,min=1"`
@@ -51,18 +50,18 @@ var Status = map[StatusBooking]string{
 	StatusComplete: "complete",
 }
 
-//	@Summary		Check in Booking
-//	@Description	Check in Booking By ID
-//	@Tags			Bookings
-//	@Produce		json
-//	@Accept			json
-//	@Param			payload	body	UpdateBookingStatus	true	"status booking"
-//	@Param			Id		path	int					true	"booking id"
-//	@Security		JWT
-//	@Success		201	{object}	main.jsonResponse.envelope{data=string}
-//	@Success		400	{object}	main.WriteJSONError.envelope
-//	@Failure		500	{object}	main.WriteJSONError.envelope
-//	@Router			/bookings/{Id}/check-in [patch]
+// @Summary		Check in Booking
+// @Description	Check in Booking By ID
+// @Tags			Bookings
+// @Produce		json
+// @Accept			json
+// @Param			payload	body	UpdateBookingStatus	true	"status booking"
+// @Param			Id		path	int					true	"booking id"
+// @Security		JWT
+// @Success		201	{object}	main.jsonResponse.envelope{data=string}
+// @Success		400	{object}	main.WriteJSONError.envelope
+// @Failure		500	{object}	main.WriteJSONError.envelope
+// @Router			/bookings/{Id}/check-in [patch]
 func (app *application) CheckInHandler(w http.ResponseWriter, r *http.Request) {
 	payload := &UpdateBookingStatus{}
 
@@ -103,18 +102,18 @@ func (app *application) CheckInHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//	@Summary		Check out Booking
-//	@Description	Check out Booking By ID
-//	@Tags			Bookings
-//	@Produce		json
-//	@Accept			json
-//	@Param			payload	body	UpdateBookingStatus	true	"status booking"
-//	@Param			Id		path	int					true	"booking id"
-//	@Security		JWT
-//	@Success		201	{object}	main.jsonResponse.envelope{data=string}
-//	@Success		400	{object}	main.WriteJSONError.envelope
-//	@Failure		500	{object}	main.WriteJSONError.envelope
-//	@Router			/bookings/{Id}/check-out [patch]
+// @Summary		Check out Booking
+// @Description	Check out Booking By ID
+// @Tags			Bookings
+// @Produce		json
+// @Accept			json
+// @Param			payload	body	UpdateBookingStatus	true	"status booking"
+// @Param			Id		path	int					true	"booking id"
+// @Security		JWT
+// @Success		201	{object}	main.jsonResponse.envelope{data=string}
+// @Success		400	{object}	main.WriteJSONError.envelope
+// @Failure		500	{object}	main.WriteJSONError.envelope
+// @Router			/bookings/{Id}/check-out [patch]
 func (app *application) CheckOutHandler(w http.ResponseWriter, r *http.Request) {
 	payload := &UpdateBookingStatus{}
 
@@ -155,17 +154,17 @@ func (app *application) CheckOutHandler(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-//	@Summary		Create Booking
-//	@Description	Create Booking
-//	@Tags			Bookings
-//	@Produce		json
-//	@Accept			json
-//	@Param			payload	body	CreateBookingPayload	true	"payload create booking"
-//	@Security		JWT
-//	@Success		201	{object}	main.jsonResponse.envelope{data=string}
-//	@Success		400	{object}	main.WriteJSONError.envelope
-//	@Failure		500	{object}	main.WriteJSONError.envelope
-//	@Router			/bookings [post]
+// @Summary		Create Booking
+// @Description	Create Booking
+// @Tags			Bookings
+// @Produce		json
+// @Accept			json
+// @Param			payload	body	CreateBookingPayload	true	"payload create booking"
+// @Security		JWT
+// @Success		201	{object}	main.jsonResponse.envelope{data=string}
+// @Success		400	{object}	main.WriteJSONError.envelope
+// @Failure		500	{object}	main.WriteJSONError.envelope
+// @Router			/bookings [post]
 func (app *application) CreateBookingHandler(w http.ResponseWriter, r *http.Request) {
 	payload := &CreateBookingPayload{}
 
@@ -188,6 +187,8 @@ func (app *application) CreateBookingHandler(w http.ResponseWriter, r *http.Requ
 		}
 	}
 
+	user := getUserFromContext(r)
+
 	// if bookings not exist, can create new booking
 	if bookingExist == nil {
 		newBook := &repository.Booking{}
@@ -198,7 +199,7 @@ func (app *application) CreateBookingHandler(w http.ResponseWriter, r *http.Requ
 		newBook.StartAt = payload.StartAt
 		newBook.EndAt = payload.EndAt
 		newBook.TotalPrice = payload.TotalPrice
-		newBook.UserId = payload.UserId
+		newBook.UserId = user.Id
 		newBook.FirstName = payload.FirstName
 		newBook.LastName = payload.LastName
 		newBook.Email = payload.Email
@@ -220,15 +221,15 @@ func (app *application) CreateBookingHandler(w http.ResponseWriter, r *http.Requ
 
 }
 
-//	@Summary		Get Bookings
-//	@Description	Get All Bookings
-//	@Tags			Bookings
-//	@Produce		json
-//	@Accept			json
-//	@Security		JWT
-//	@Success		200	{object}	main.jsonResponse.envelope{data=[]repository.Booking}
-//	@Failure		500	{object}	main.WriteJSONError.envelope
-//	@Router			/bookings [get]
+// @Summary		Get Bookings
+// @Description	Get All Bookings
+// @Tags			Bookings
+// @Produce		json
+// @Accept			json
+// @Security		JWT
+// @Success		200	{object}	main.jsonResponse.envelope{data=[]repository.Booking}
+// @Failure		500	{object}	main.WriteJSONError.envelope
+// @Router			/bookings [get]
 func (app *application) GetBookingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	bookings, err := app.repository.Bookings.GetBookings(r.Context())
@@ -243,17 +244,17 @@ func (app *application) GetBookingsHandler(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-//	@Summary		Get Booking
-//	@Description	Get Booking By ID
-//	@Tags			Bookings
-//	@Produce		json
-//	@Accept			json
-//	@Param			Id	path	int	true	"Booking ID"
-//	@Security		JWT
-//	@Success		200	{object}	main.jsonResponse.envelope{data=repository.Booking}
-//	@Failure		404	{object}	main.WriteJSONError.envelope
-//	@Failure		500	{object}	main.WriteJSONError.envelope
-//	@Router			/bookings/{Id} [get]
+// @Summary		Get Booking
+// @Description	Get Booking By ID
+// @Tags			Bookings
+// @Produce		json
+// @Accept			json
+// @Param			Id	path	int	true	"Booking ID"
+// @Security		JWT
+// @Success		200	{object}	main.jsonResponse.envelope{data=repository.Booking}
+// @Failure		404	{object}	main.WriteJSONError.envelope
+// @Failure		500	{object}	main.WriteJSONError.envelope
+// @Router			/bookings/{Id} [get]
 func (app *application) GetBookingByIdHandler(w http.ResponseWriter, r *http.Request) {
 	booking := GetBookingFromContext(r)
 
@@ -263,17 +264,17 @@ func (app *application) GetBookingByIdHandler(w http.ResponseWriter, r *http.Req
 	}
 }
 
-//	@Summary		Delete Booking
-//	@Description	Delete Booking By ID
-//	@Tags			Bookings
-//	@Produce		json
-//	@Accept			json
-//	@Param			Id	path	int	true	"Booking ID"
-//	@Security		JWT
-//	@Success		204
-//	@Failure		404	{object}	main.WriteJSONError.envelope
-//	@Failure		500	{object}	main.WriteJSONError.envelope
-//	@Router			/bookings/{Id} [delete]
+// @Summary		Delete Booking
+// @Description	Delete Booking By ID
+// @Tags			Bookings
+// @Produce		json
+// @Accept			json
+// @Param			Id	path	int	true	"Booking ID"
+// @Security		JWT
+// @Success		204
+// @Failure		404	{object}	main.WriteJSONError.envelope
+// @Failure		500	{object}	main.WriteJSONError.envelope
+// @Router			/bookings/{Id} [delete]
 func (app *application) DeleteBookingHandler(w http.ResponseWriter, r *http.Request) {
 	booking := GetBookingFromContext(r)
 
@@ -320,7 +321,12 @@ func (app *application) BookingContentMiddleware(next http.Handler) http.Handler
 }
 
 func GetBookingFromContext(r *http.Request) *repository.Booking {
-	booking := r.Context().Value(bookingctx).(*repository.Booking)
+	booking := r.Context().Value(bookingctx)
 
-	return booking
+	val, ok := booking.(*repository.Booking)
+	if !ok {
+		return nil
+	}
+
+	return val
 }
