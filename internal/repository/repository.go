@@ -29,6 +29,8 @@ type Repository struct {
 		Activate(context.Context, string) error
 		GetUserInvitation(ctx context.Context, tx *sql.Tx, token string) (*User, error)
 		UpdateWithTx(ctx context.Context, tx *sql.Tx, user *User) error
+		GetUserByEmail(ctx context.Context, email string) (user *User, err error)
+		GetByID(ctx context.Context, userId int) (*User, error)
 	}
 	Roles interface {
 		Create(context.Context, *Role) error

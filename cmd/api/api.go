@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/log"
+	"github.com/faizisyellow/gobali/internal/auth"
 	"github.com/faizisyellow/gobali/internal/mailer"
 	"github.com/faizisyellow/gobali/internal/repository"
 	"github.com/faizisyellow/gobali/internal/uploader"
@@ -22,10 +23,11 @@ import (
 )
 
 type application struct {
-	configs    config
-	repository repository.Repository
-	mailer     mailer.Client
-	upload     uploader.Uploader
+	configs        config
+	repository     repository.Repository
+	mailer         mailer.Client
+	upload         uploader.Uploader
+	authentication auth.Authenticator
 }
 
 type config struct {
@@ -35,6 +37,18 @@ type config struct {
 	mail      mailConfig
 	upload    uploadConfig
 	clientURL string
+	auth      authConfig
+}
+
+type tokenConfig struct {
+	privateKey string
+	exp        time.Duration
+	iss        string
+	sub        string
+}
+
+type authConfig struct {
+	token tokenConfig
 }
 
 type uploadConfig struct {
@@ -67,6 +81,7 @@ func (app *application) mount() http.Handler {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(60 * time.Second))
 
+	// TODO: FIX ROUTING AUTH
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/health", app.healthHandler)
 		r.Get("/swagger/*", httpSwagger.Handler(
@@ -76,14 +91,18 @@ func (app *application) mount() http.Handler {
 
 		r.Route("/users", func(r chi.Router) {
 			r.Put("/activate/{token}", app.ActivateUserHandler)
+
+			r.Use(app.AuthTokenMiddleware)
 			r.Post("/", app.CreateUserHandler)
 		})
 
 		r.Route("/categories", func(r chi.Router) {
+
 			r.Post("/", app.CreateCategoryHandler)
 			r.Get("/", app.GetCategoriesHandler)
 
 			r.Route("/{ID}", func(r chi.Router) {
+				r.Use(app.AuthTokenMiddleware)
 				r.Get("/", app.GetCategoryByIDHandler)
 				r.Put("/", app.UpdateCategoryHandler)
 				r.Delete("/", app.DeleteCategoryHandler)
@@ -91,10 +110,12 @@ func (app *application) mount() http.Handler {
 		})
 
 		r.Route("/locations", func(r chi.Router) {
+
 			r.Post("/", app.CreateLocationHandler)
 			r.Get("/", app.GetLocationsHandler)
 
 			r.Route("/{ID}", func(r chi.Router) {
+				r.Use(app.AuthTokenMiddleware)
 				r.Get("/", app.GetLocationByIdHandler)
 				r.Put("/", app.UpdateLocationHandler)
 				r.Delete("/", app.DeleteLocationHandler)
@@ -102,10 +123,13 @@ func (app *application) mount() http.Handler {
 		})
 
 		r.Route("/types", func(r chi.Router) {
+
 			r.Get("/", app.GetTypesHandler)
 			r.Post("/", app.CreateTypeHandler)
 
 			r.Route("/{ID}", func(r chi.Router) {
+				r.Use(app.AuthTokenMiddleware)
+
 				r.Get("/", app.GetTypeByIDHandler)
 				r.Put("/", app.UpdateTypeHandler)
 				r.Delete("/", app.DeleteTypeHandler)
@@ -113,10 +137,12 @@ func (app *application) mount() http.Handler {
 		})
 
 		r.Route("/amenities", func(r chi.Router) {
+
 			r.Get("/", app.GetAmenitiesHandler)
 			r.Post("/", app.CreateAmenityHandler)
 
 			r.Route("/{ID}", func(r chi.Router) {
+				r.Use(app.AuthTokenMiddleware)
 				r.Get("/", app.GetAmenityByIDHandler)
 				r.Put("/", app.UpdateAmenityHandler)
 				r.Delete("/", app.DeleteAmenityHandler)
@@ -124,23 +150,29 @@ func (app *application) mount() http.Handler {
 		})
 
 		r.Route("/villas", func(r chi.Router) {
+
+			// public
 			r.Get("/", app.GetVillasHandler)
-			r.Post("/", app.UploadImagesMiddleware(app.CreateVillaHandler, "villas"))
+			r.Get("/{villaID}", app.VillaContentMiddleware(app.GetVillaByIdHandler))
 
-			r.Route("/{villaID}", func(r chi.Router) {
-				r.Use(app.VillaContentMiddleware)
+			// authenticated
+			r.Route("/", func(r chi.Router) {
+				r.Use(app.AuthTokenMiddleware)
 
-				r.Put("/", app.UploadImagesMiddleware(app.UpdateVillaHandler, "villas"))
-				r.Get("/", app.GetVillaByIdHandler)
-				r.Delete("/", app.DeleteVillaByIdHandler)
+				r.Post("/", app.UploadImagesMiddleware(app.CreateVillaHandler, "villas"))
+
+				r.Put("/{villaID}", app.VillaContentMiddleware(app.UploadImagesMiddleware(app.UpdateVillaHandler, "villas")))
+				r.Delete("/{villaID}", app.VillaContentMiddleware(app.DeleteVillaByIdHandler))
 			})
 		})
 
 		r.Route("/bookings", func(r chi.Router) {
+
 			r.Get("/", app.GetBookingsHandler)
 			r.Post("/", app.CreateBookingHandler)
 
 			r.Route("/{bookingID}", func(r chi.Router) {
+				r.Use(app.AuthTokenMiddleware)
 				r.Use(app.BookingContentMiddleware)
 
 				r.Get("/", app.GetBookingByIdHandler)
@@ -152,6 +184,7 @@ func (app *application) mount() http.Handler {
 
 		r.Route("/authentication", func(r chi.Router) {
 			r.Post("/register", app.RegisterHandler)
+			r.Post("/login", app.LoginHandler)
 		})
 	})
 

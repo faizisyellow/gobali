@@ -123,6 +123,16 @@ definitions:
       id:
         type: integer
     type: object
+  main.LoginPayload:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
   main.RegisterPayload:
     properties:
       email:
@@ -383,6 +393,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Get Amenities
       tags:
       - Amenities
@@ -421,6 +433,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Create Amenity
       tags:
       - Amenities
@@ -444,6 +458,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Delete Amenity
       tags:
       - Amenities
@@ -475,6 +491,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Get Amenity
       tags:
       - Amenities
@@ -514,9 +532,50 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Update Amenity
       tags:
       - Amenities
+  /authentication/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user
+      parameters:
+      - description: 'Payload credential user, password: Tester_1234'
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.LoginPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      summary: Login user
+      tags:
+      - Auth
   /authentication/register:
     post:
       consumes:
@@ -575,6 +634,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Get Bookings
       tags:
       - Bookings
@@ -609,6 +670,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Create Booking
       tags:
       - Bookings
@@ -636,6 +699,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Delete Booking
       tags:
       - Bookings
@@ -669,6 +734,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Get Booking
       tags:
       - Bookings
@@ -709,6 +776,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Check in Booking
       tags:
       - Bookings
@@ -749,6 +818,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Check out Booking
       tags:
       - Bookings
@@ -777,6 +848,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Get categories
       tags:
       - Categories
@@ -815,6 +888,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Create category
       tags:
       - Categories
@@ -838,6 +913,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Delete Category
       tags:
       - Categories
@@ -869,6 +946,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Get category
       tags:
       - Categories
@@ -908,6 +987,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Update Category
       tags:
       - Categories
@@ -948,6 +1029,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Get locations
       tags:
       - Locations
@@ -986,6 +1069,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Create location
       tags:
       - Locations
@@ -1009,6 +1094,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Delete Location
       tags:
       - Locations
@@ -1040,6 +1127,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Get location
       tags:
       - Locations
@@ -1087,6 +1176,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Update Location
       tags:
       - Locations
@@ -1115,6 +1206,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Get types
       tags:
       - Types
@@ -1153,6 +1246,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Create Type
       tags:
       - Types
@@ -1176,6 +1271,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Delete Type
       tags:
       - Types
@@ -1207,6 +1304,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Get Type
       tags:
       - Types
@@ -1246,6 +1345,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Update type
       tags:
       - Types
@@ -1281,6 +1382,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Create user
       tags:
       - Users
@@ -1380,6 +1483,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Create Villa
       tags:
       - Villas
@@ -1427,6 +1532,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Update Villa
       tags:
       - Villas
@@ -1452,6 +1559,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
       summary: Delete Villa
       tags:
       - Villas
@@ -1489,4 +1598,9 @@ paths:
 schemes:
 - http
 - https
+securityDefinitions:
+  JWT:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

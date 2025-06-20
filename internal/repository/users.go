@@ -109,6 +109,61 @@ func (u *UserRepository) CreateWithTx(ctx context.Context, tx *sql.Tx, payload *
 	return nil
 }
 
+func (u *UserRepository) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	query := `SELECT id,email,password FROM users WHERE email = ? AND is_active = 1`
+
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
+
+	row := u.db.QueryRowContext(ctx, query, email)
+
+	user := User{}
+	err := row.Scan(&user.Id, &user.Email, &user.Password.Hash)
+	if err != nil {
+		switch err {
+		case sql.ErrNoRows:
+			return nil, ErrNoRows
+		default:
+			return nil, err
+		}
+	}
+
+	return &user, nil
+}
+
+func (u *UserRepository) GetByID(ctx context.Context, userId int) (*User, error) {
+	query := `
+	SELECT users.id, username, email, password, role_id, roles.id, roles.name, roles.level, roles.description
+	FROM users JOIN roles ON users.role_id = roles.id WHERE users.id = ? AND is_active = 1;
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
+
+	res := u.db.QueryRowContext(ctx, query, userId)
+
+	user := User{}
+	err := res.Scan(
+		&user.Id, &user.Username, &user.Email,
+		&user.Password.Hash,
+		&user.RoleId,
+		&user.Role.Id,
+		&user.Role.Name,
+		&user.Role.Level,
+		&user.Role.Description,
+	)
+	if err != nil {
+		switch err {
+		case sql.ErrNoRows:
+			return nil, ErrNoRows
+		default:
+			return nil, err
+		}
+	}
+
+	return &user, nil
+}
+
 func (u *UserRepository) createUserInvitation(ctx context.Context, tx *sql.Tx, token string, exp time.Duration, userID int) error {
 	query := `INSERT INTO user_invitation(token,user_id,expire) VALUES(?,?,?)`
 

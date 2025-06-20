@@ -23,18 +23,18 @@ type TypeResponse struct {
 	CreatedAt string `json:"created_at"`
 }
 
-// @Summary		Create Type
-// @Description	Create Type
-// @Tags			Types
-// @Accept			json
-// @Produce		json
-// @Param			payload	body		CreateTypePayload	true	"json format payload"
-//
-// @Success		201		{object}	main.jsonResponse.envelope{data=string}
-// @Failure		400		{object}	main.WriteJSONError.envelope
-// @Failure		409		{object}	main.WriteJSONError.envelope
-// @Failure		500		{object}	main.WriteJSONError.envelope
-// @Router			/types [POST]
+//	@Summary		Create Type
+//	@Description	Create Type
+//	@Tags			Types
+//	@Accept			json
+//	@Produce		json
+//	@Param			payload	body	CreateTypePayload	true	"json format payload"
+//	@Security		JWT
+//	@Success		201	{object}	main.jsonResponse.envelope{data=string}
+//	@Failure		400	{object}	main.WriteJSONError.envelope
+//	@Failure		409	{object}	main.WriteJSONError.envelope
+//	@Failure		500	{object}	main.WriteJSONError.envelope
+//	@Router			/types [POST]
 func (app *application) CreateTypeHandler(w http.ResponseWriter, r *http.Request) {
 	payload := &CreateTypePayload{}
 
@@ -66,16 +66,16 @@ func (app *application) CreateTypeHandler(w http.ResponseWriter, r *http.Request
 
 }
 
-// @Summary		Get Type
-// @Description	Get Type by ID
-// @Tags			Types
-// @Produce		json
-// @Param			ID	path		int	true	"Type id"
-//
-// @Success		200	{object}	main.jsonResponse.envelope{data=repository.Type}
-// @Failure		404	{object}	main.WriteJSONError.envelope
-// @Failure		500	{object}	main.WriteJSONError.envelope
-// @Router			/types/{ID} [GET]
+//	@Summary		Get Type
+//	@Description	Get Type by ID
+//	@Tags			Types
+//	@Produce		json
+//	@Param			ID	path	int	true	"Type id"
+//	@Security		JWT
+//	@Success		200	{object}	main.jsonResponse.envelope{data=repository.Type}
+//	@Failure		404	{object}	main.WriteJSONError.envelope
+//	@Failure		500	{object}	main.WriteJSONError.envelope
+//	@Router			/types/{ID} [GET]
 func (app *application) GetTypeByIDHandler(w http.ResponseWriter, r *http.Request) {
 	categoryId := chi.URLParam(r, "ID")
 
@@ -103,15 +103,15 @@ func (app *application) GetTypeByIDHandler(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-// @Summary		Get types
-// @Description	Get all types
-// @Tags			Types
-// @Produce		json
-//
-// @Success		200	{object}	main.jsonResponse.envelope{data=[]TypeResponse}
-// @Failure		404	{object}	main.WriteJSONError.envelope
-// @Failure		500	{object}	main.WriteJSONError.envelope
-// @Router			/types [GET]
+//	@Summary		Get types
+//	@Description	Get all types
+//	@Tags			Types
+//	@Produce		json
+//	@Security		JWT
+//	@Success		200	{object}	main.jsonResponse.envelope{data=[]TypeResponse}
+//	@Failure		404	{object}	main.WriteJSONError.envelope
+//	@Failure		500	{object}	main.WriteJSONError.envelope
+//	@Router			/types [GET]
 func (app *application) GetTypesHandler(w http.ResponseWriter, r *http.Request) {
 
 	tys, err := app.repository.Types.GetTypes(r.Context())
@@ -140,17 +140,18 @@ func (app *application) GetTypesHandler(w http.ResponseWriter, r *http.Request) 
 
 }
 
-// @Summary		Update type
-// @Description	Update type by ID
-// @Tags			Types
-// @Accept			json
-// @Produce		json
-// @Param			ID		path		int					true	"type ID"
-// @Param			Payload	body		UpdateTypePayload	true	"Payload update type"
-// @Success		201		{object}	main.jsonResponse.envelope{data=string}
-// @Failure		404		{object}	main.WriteJSONError.envelope
-// @Failure		500		{object}	main.WriteJSONError.envelope
-// @Router			/types/{ID} [PUT]
+//	@Summary		Update type
+//	@Description	Update type by ID
+//	@Tags			Types
+//	@Accept			json
+//	@Produce		json
+//	@Param			ID		path	int					true	"type ID"
+//	@Param			Payload	body	UpdateTypePayload	true	"Payload update type"
+//	@Security		JWT
+//	@Success		201	{object}	main.jsonResponse.envelope{data=string}
+//	@Failure		404	{object}	main.WriteJSONError.envelope
+//	@Failure		500	{object}	main.WriteJSONError.envelope
+//	@Router			/types/{ID} [PUT]
 func (app *application) UpdateTypeHandler(w http.ResponseWriter, r *http.Request) {
 	payload := &UpdateTypePayload{}
 	typeId := chi.URLParam(r, "ID")
@@ -207,14 +208,15 @@ func (app *application) UpdateTypeHandler(w http.ResponseWriter, r *http.Request
 	}
 }
 
-// @Summary		Delete Type
-// @Description	Delete Type by ID
-// @Tags			Types
-// @Param			ID	path	int	true	"Type ID"
-// @Success		204
-// @Failure		404	{object}	main.WriteJSONError.envelope
-// @Failure		500	{object}	main.WriteJSONError.envelope
-// @Router			/types/{ID} [delete]
+//	@Summary		Delete Type
+//	@Description	Delete Type by ID
+//	@Tags			Types
+//	@Param			ID	path	int	true	"Type ID"
+//	@Security		JWT
+//	@Success		204
+//	@Failure		404	{object}	main.WriteJSONError.envelope
+//	@Failure		500	{object}	main.WriteJSONError.envelope
+//	@Router			/types/{ID} [delete]
 func (app *application) DeleteTypeHandler(w http.ResponseWriter, r *http.Request) {
 	typeId := chi.URLParam(r, "ID")
 

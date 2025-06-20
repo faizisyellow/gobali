@@ -26,6 +26,11 @@ const docTemplate = `{
     "paths": {
         "/amenities": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get all Amenities",
                 "produces": [
                     "application/json"
@@ -71,6 +76,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create Amenity",
                 "consumes": [
                     "application/json"
@@ -135,6 +145,11 @@ const docTemplate = `{
         },
         "/amenities/{ID}": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get Amenity by ID",
                 "produces": [
                     "application/json"
@@ -186,6 +201,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Update Amenity by ID",
                 "consumes": [
                     "application/json"
@@ -249,6 +269,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Delete Amenity by ID",
                 "tags": [
                     "Amenities"
@@ -269,6 +294,70 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/main.WriteJSONError.envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/main.WriteJSONError.envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/authentication/login": {
+            "post": {
+                "description": "Login user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login user",
+                "parameters": [
+                    {
+                        "description": "Payload credential user, password: Tester_1234",
+                        "name": "Payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.LoginPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/main.jsonResponse.envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/main.WriteJSONError.envelope"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/main.WriteJSONError.envelope"
                         }
@@ -342,6 +431,11 @@ const docTemplate = `{
         },
         "/bookings": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get All Bookings",
                 "consumes": [
                     "application/json"
@@ -384,6 +478,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create Booking",
                 "consumes": [
                     "application/json"
@@ -442,6 +541,11 @@ const docTemplate = `{
         },
         "/bookings/{Id}": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get Booking By ID",
                 "consumes": [
                     "application/json"
@@ -496,6 +600,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Delete Booking By ID",
                 "consumes": [
                     "application/json"
@@ -537,6 +646,11 @@ const docTemplate = `{
         },
         "/bookings/{Id}/check-in": {
             "patch": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Check in Booking By ID",
                 "consumes": [
                     "application/json"
@@ -602,6 +716,11 @@ const docTemplate = `{
         },
         "/bookings/{Id}/check-out": {
             "patch": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Check out Booking By ID",
                 "consumes": [
                     "application/json"
@@ -667,6 +786,11 @@ const docTemplate = `{
         },
         "/categories": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get all categories",
                 "produces": [
                     "application/json"
@@ -712,6 +836,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create category",
                 "consumes": [
                     "application/json"
@@ -776,6 +905,11 @@ const docTemplate = `{
         },
         "/categories/{ID}": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get category by ID",
                 "produces": [
                     "application/json"
@@ -827,6 +961,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Update Category by ID",
                 "consumes": [
                     "application/json"
@@ -890,6 +1029,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Delete Category by ID",
                 "tags": [
                     "Categories"
@@ -955,6 +1099,11 @@ const docTemplate = `{
         },
         "/locations": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get All Locations",
                 "produces": [
                     "application/json"
@@ -994,6 +1143,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create new location",
                 "consumes": [
                     "application/json"
@@ -1058,6 +1212,11 @@ const docTemplate = `{
         },
         "/locations/{ID}": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get Location By ID",
                 "produces": [
                     "application/json"
@@ -1109,6 +1268,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Update new Location",
                 "consumes": [
                     "application/json"
@@ -1184,6 +1348,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Delete Location by ID",
                 "tags": [
                     "Locations"
@@ -1219,6 +1388,11 @@ const docTemplate = `{
         },
         "/types": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get all types",
                 "produces": [
                     "application/json"
@@ -1264,6 +1438,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create Type",
                 "consumes": [
                     "application/json"
@@ -1328,6 +1507,11 @@ const docTemplate = `{
         },
         "/types/{ID}": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get Type by ID",
                 "produces": [
                     "application/json"
@@ -1379,6 +1563,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Update type by ID",
                 "consumes": [
                     "application/json"
@@ -1442,6 +1631,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Delete Type by ID",
                 "tags": [
                     "Types"
@@ -1477,6 +1671,11 @@ const docTemplate = `{
         },
         "/users": {
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create user",
                 "consumes": [
                     "application/json"
@@ -1621,6 +1820,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create Villa",
                 "consumes": [
                     "multipart/form-data"
@@ -1697,6 +1901,11 @@ const docTemplate = `{
         },
         "/villas/{ID}": {
             "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Update Villa by ID",
                 "consumes": [
                     "multipart/form-data"
@@ -1823,6 +2032,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Delete Villa By ID",
                 "produces": [
                     "application/json"
@@ -2035,6 +2249,21 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                }
+            }
+        },
+        "main.LoginPayload": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
                 }
             }
         },
@@ -2375,6 +2604,13 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "JWT": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

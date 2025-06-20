@@ -23,17 +23,18 @@ type UpdateLocationPayload struct {
 	CreateLocationPayload
 }
 
-// @Summary		Create location
-// @Description	Create new location
-// @Tags			Locations
-// @Accept			json
-// @Produce		json
-// @Param			Payload	body		CreateLocationPayload	true	"Payload create new location"
-// @Success		201		{object}	main.jsonResponse.envelope{data=string}
-// @Failure		400		{object}	main.WriteJSONError.envelope
-// @Failure		409		{object}	main.WriteJSONError.envelope
-// @Failure		500		{object}	main.WriteJSONError.envelope
-// @Router			/locations [post]
+//	@Summary		Create location
+//	@Description	Create new location
+//	@Tags			Locations
+//	@Accept			json
+//	@Produce		json
+//	@Param			Payload	body	CreateLocationPayload	true	"Payload create new location"
+//	@Security		JWT
+//	@Success		201	{object}	main.jsonResponse.envelope{data=string}
+//	@Failure		400	{object}	main.WriteJSONError.envelope
+//	@Failure		409	{object}	main.WriteJSONError.envelope
+//	@Failure		500	{object}	main.WriteJSONError.envelope
+//	@Router			/locations [post]
 func (app *application) CreateLocationHandler(w http.ResponseWriter, r *http.Request) {
 	payload := &CreateLocationPayload{}
 
@@ -65,15 +66,16 @@ func (app *application) CreateLocationHandler(w http.ResponseWriter, r *http.Req
 	}
 }
 
-// @Summary		Get location
-// @Description	Get Location By ID
-// @Tags			Locations
-// @Produce		json
-// @Param			ID	path		int	true	"Location ID"
-// @Success		200	{object}	main.jsonResponse.envelope{data=repository.Location}
-// @Failure		404	{object}	main.WriteJSONError.envelope
-// @Failure		500	{object}	main.WriteJSONError.envelope
-// @Router			/locations/{ID} [get]
+//	@Summary		Get location
+//	@Description	Get Location By ID
+//	@Tags			Locations
+//	@Produce		json
+//	@Param			ID	path	int	true	"Location ID"
+//	@Security		JWT
+//	@Success		200	{object}	main.jsonResponse.envelope{data=repository.Location}
+//	@Failure		404	{object}	main.WriteJSONError.envelope
+//	@Failure		500	{object}	main.WriteJSONError.envelope
+//	@Router			/locations/{ID} [get]
 func (app *application) GetLocationByIdHandler(w http.ResponseWriter, r *http.Request) {
 	locationId := chi.URLParam(r, "ID")
 
@@ -101,13 +103,14 @@ func (app *application) GetLocationByIdHandler(w http.ResponseWriter, r *http.Re
 	}
 }
 
-// @Summary		Get locations
-// @Description	Get All Locations
-// @Tags			Locations
-// @Produce		json
-// @Success		200	{object}	main.jsonResponse.envelope{data=[]LocationResponse{}}
-// @Failure		500	{object}	main.WriteJSONError.envelope
-// @Router			/locations [get]
+//	@Summary		Get locations
+//	@Description	Get All Locations
+//	@Tags			Locations
+//	@Produce		json
+//	@Security		JWT
+//	@Success		200	{object}	main.jsonResponse.envelope{data=[]LocationResponse{}}
+//	@Failure		500	{object}	main.WriteJSONError.envelope
+//	@Router			/locations [get]
 func (app *application) GetLocationsHandler(w http.ResponseWriter, r *http.Request) {
 
 	location, err := app.repository.Location.GetLocations(r.Context())
@@ -134,21 +137,22 @@ func (app *application) GetLocationsHandler(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-// @Summary		Update Location
-// @Description	Update new Location
+//	@Summary		Update Location
+//	@Description	Update new Location
 //
-// @Tags			Locations
+//	@Tags			Locations
 //
-// @Accept			json
-// @Produce		json
-// @Param			ID		path		int						true	"Location Id"
-// @Param			payload	body		UpdateLocationPayload	true	"body new location"
-// @Success		201		{object}	main.jsonResponse.envelope{data=string}
-// @Failure		404		{object}	main.WriteJSONError.envelope
-// @Failure		400		{object}	main.WriteJSONError.envelope
-// @Failure		409		{object}	main.WriteJSONError.envelope
-// @Failure		500		{object}	main.WriteJSONError.envelope
-// @Router			/locations/{ID} [put]
+//	@Accept			json
+//	@Produce		json
+//	@Param			ID	path	int	true	"Location Id"
+//	@Security		JWT
+//	@Param			payload	body		UpdateLocationPayload	true	"body new location"
+//	@Success		201		{object}	main.jsonResponse.envelope{data=string}
+//	@Failure		404		{object}	main.WriteJSONError.envelope
+//	@Failure		400		{object}	main.WriteJSONError.envelope
+//	@Failure		409		{object}	main.WriteJSONError.envelope
+//	@Failure		500		{object}	main.WriteJSONError.envelope
+//	@Router			/locations/{ID} [put]
 func (app *application) UpdateLocationHandler(w http.ResponseWriter, r *http.Request) {
 	payload := &UpdateLocationPayload{}
 
@@ -203,14 +207,15 @@ func (app *application) UpdateLocationHandler(w http.ResponseWriter, r *http.Req
 	}
 }
 
-// @Summary		Delete Location
-// @Description	Delete Location by ID
-// @Tags			Locations
-// @Param			ID	path	int	true	"Location ID"
-// @Success		204
-// @Failure		404	{object}	main.WriteJSONError.envelope
-// @Failure		500	{object}	main.WriteJSONError.envelope
-// @Router			/locations/{ID} [delete]
+//	@Summary		Delete Location
+//	@Description	Delete Location by ID
+//	@Tags			Locations
+//	@Param			ID	path	int	true	"Location ID"
+//	@Security		JWT
+//	@Success		204
+//	@Failure		404	{object}	main.WriteJSONError.envelope
+//	@Failure		500	{object}	main.WriteJSONError.envelope
+//	@Router			/locations/{ID} [delete]
 func (app *application) DeleteLocationHandler(w http.ResponseWriter, r *http.Request) {
 
 	locationId := chi.URLParam(r, "ID")

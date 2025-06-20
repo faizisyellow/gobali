@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/faizisyellow/gobali/internal/mailer"
 	"github.com/faizisyellow/gobali/internal/repository"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
 
@@ -16,6 +17,11 @@ type RegisterPayload struct {
 	Username string `json:"username" validate:"required"`
 	Email    string `json:"email" validate:"required,min=5,email"`
 	Password string `json:"password" validate:"required,min=5,withspace,validpassword"`
+}
+
+type LoginPayload struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
 }
 
 // @Summary		Register user
@@ -105,4 +111,64 @@ func (app *application) RegisterHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+}
+
+// @Summary		Login user
+// @Description	Login user
+// @Tags			Auth
+// @Accept			json
+// @Produce		json
+// @Param			Payload	body		LoginPayload	true	"Payload credential user, password: Tester_1234"
+// @Success		200		{object}	main.jsonResponse.envelope{data=string}
+// @Failure		400		{object}	main.WriteJSONError.envelope
+// @Failure		401		{object}	main.WriteJSONError.envelope
+// @Failure		500		{object}	main.WriteJSONError.envelope
+// @Router			/authentication/login [POST]
+func (app *application) LoginHandler(w http.ResponseWriter, r *http.Request) {
+	payload := &LoginPayload{}
+
+	if err := readJSON(w, r, payload); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	if err := Validate.Struct(payload); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	user, err := app.repository.Users.GetUserByEmail(r.Context(), payload.Email)
+	if err != nil {
+		switch err {
+		case repository.ErrNoRows:
+			app.unAuthorizedErrorResponse(w, r, err)
+		default:
+			app.internalServerError(w, r, err)
+		}
+		return
+	}
+
+	err = user.Password.Compare(payload.Password)
+	if err != nil {
+		app.unAuthorizedErrorResponse(w, r, err)
+		return
+	}
+
+	claims := jwt.MapClaims{
+		"iss": app.configs.auth.token.iss,
+		"sub": app.configs.auth.token.sub,
+		"exp": app.configs.auth.token.exp,
+		"id":  user.Id,
+	}
+
+	signedToken, err := app.authentication.GenerateToken(claims)
+	if err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+
+	if err := app.jsonResponse(w, http.StatusOK, signedToken); err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
 }

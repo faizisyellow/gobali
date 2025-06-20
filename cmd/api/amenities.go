@@ -26,18 +26,18 @@ type UpdateAmenityPayload struct {
 	CreateAmenityPayload
 }
 
-// @Summary		Create Amenity
-// @Description	Create Amenity
-// @Tags			Amenities
-// @Accept			json
-// @Produce		json
-// @Param			payload	body		CreateAmenityPayload	true	"json format payload"
-//
-// @Success		201		{object}	main.jsonResponse.envelope{data=string}
-// @Failure		400		{object}	main.WriteJSONError.envelope
-// @Failure		409		{object}	main.WriteJSONError.envelope
-// @Failure		500		{object}	main.WriteJSONError.envelope
-// @Router			/amenities [POST]
+//	@Summary		Create Amenity
+//	@Description	Create Amenity
+//	@Tags			Amenities
+//	@Accept			json
+//	@Produce		json
+//	@Param			payload	body	CreateAmenityPayload	true	"json format payload"
+//	@Security		JWT
+//	@Success		201	{object}	main.jsonResponse.envelope{data=string}
+//	@Failure		400	{object}	main.WriteJSONError.envelope
+//	@Failure		409	{object}	main.WriteJSONError.envelope
+//	@Failure		500	{object}	main.WriteJSONError.envelope
+//	@Router			/amenities [POST]
 func (app *application) CreateAmenityHandler(w http.ResponseWriter, r *http.Request) {
 	payload := &CreateAmenityPayload{}
 
@@ -71,16 +71,16 @@ func (app *application) CreateAmenityHandler(w http.ResponseWriter, r *http.Requ
 
 }
 
-// @Summary		Get Amenity
-// @Description	Get Amenity by ID
-// @Tags			Amenities
-// @Produce		json
-// @Param			ID	path		int	true	"amenity id"
-//
-// @Success		200	{object}	main.jsonResponse.envelope{data=repository.Amenity}
-// @Failure		404	{object}	main.WriteJSONError.envelope
-// @Failure		500	{object}	main.WriteJSONError.envelope
-// @Router			/amenities/{ID} [GET]
+//	@Summary		Get Amenity
+//	@Description	Get Amenity by ID
+//	@Tags			Amenities
+//	@Produce		json
+//	@Param			ID	path	int	true	"amenity id"
+//	@Security		JWT
+//	@Success		200	{object}	main.jsonResponse.envelope{data=repository.Amenity}
+//	@Failure		404	{object}	main.WriteJSONError.envelope
+//	@Failure		500	{object}	main.WriteJSONError.envelope
+//	@Router			/amenities/{ID} [GET]
 func (app *application) GetAmenityByIDHandler(w http.ResponseWriter, r *http.Request) {
 	amenityId := chi.URLParam(r, "ID")
 
@@ -108,15 +108,15 @@ func (app *application) GetAmenityByIDHandler(w http.ResponseWriter, r *http.Req
 	}
 }
 
-// @Summary		Get Amenities
-// @Description	Get all Amenities
-// @Tags			Amenities
-// @Produce		json
-//
-// @Success		200	{object}	main.jsonResponse.envelope{data=[]AmenityResponse}
-// @Failure		404	{object}	main.WriteJSONError.envelope
-// @Failure		500	{object}	main.WriteJSONError.envelope
-// @Router			/amenities [GET]
+//	@Summary		Get Amenities
+//	@Description	Get all Amenities
+//	@Tags			Amenities
+//	@Produce		json
+//	@Security		JWT
+//	@Success		200	{object}	main.jsonResponse.envelope{data=[]AmenityResponse}
+//	@Failure		404	{object}	main.WriteJSONError.envelope
+//	@Failure		500	{object}	main.WriteJSONError.envelope
+//	@Router			/amenities [GET]
 func (app *application) GetAmenitiesHandler(w http.ResponseWriter, r *http.Request) {
 
 	amenities, err := app.repository.Amenities.GetAmenities(r.Context())
@@ -147,17 +147,18 @@ func (app *application) GetAmenitiesHandler(w http.ResponseWriter, r *http.Reque
 
 }
 
-// @Summary		Update Amenity
-// @Description	Update Amenity by ID
-// @Tags			Amenities
-// @Accept			json
-// @Produce		json
-// @Param			ID		path		int						true	"Amenity ID"
-// @Param			Payload	body		UpdateAmenityPayload	true	"Payload update Amenity"
-// @Success		201		{object}	main.jsonResponse.envelope{data=string}
-// @Failure		404		{object}	main.WriteJSONError.envelope
-// @Failure		500		{object}	main.WriteJSONError.envelope
-// @Router			/amenities/{ID} [PUT]
+//	@Summary		Update Amenity
+//	@Description	Update Amenity by ID
+//	@Tags			Amenities
+//	@Accept			json
+//	@Produce		json
+//	@Param			ID		path	int						true	"Amenity ID"
+//	@Param			Payload	body	UpdateAmenityPayload	true	"Payload update Amenity"
+//	@Security		JWT
+//	@Success		201	{object}	main.jsonResponse.envelope{data=string}
+//	@Failure		404	{object}	main.WriteJSONError.envelope
+//	@Failure		500	{object}	main.WriteJSONError.envelope
+//	@Router			/amenities/{ID} [PUT]
 func (app *application) UpdateAmenityHandler(w http.ResponseWriter, r *http.Request) {
 	payload := &UpdateAmenityPayload{}
 	catId := chi.URLParam(r, "ID")
@@ -217,14 +218,15 @@ func (app *application) UpdateAmenityHandler(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-// @Summary		Delete Amenity
-// @Description	Delete Amenity by ID
-// @Tags			Amenities
-// @Param			ID	path	int	true	"Amenity ID"
-// @Success		204
-// @Failure		404	{object}	main.WriteJSONError.envelope
-// @Failure		500	{object}	main.WriteJSONError.envelope
-// @Router			/amenities/{ID} [delete]
+//	@Summary		Delete Amenity
+//	@Description	Delete Amenity by ID
+//	@Tags			Amenities
+//	@Param			ID	path	int	true	"Amenity ID"
+//	@Security		JWT
+//	@Success		204
+//	@Failure		404	{object}	main.WriteJSONError.envelope
+//	@Failure		500	{object}	main.WriteJSONError.envelope
+//	@Router			/amenities/{ID} [delete]
 func (app *application) DeleteAmenityHandler(w http.ResponseWriter, r *http.Request) {
 	amenityId := chi.URLParam(r, "ID")
 
