@@ -130,6 +130,15 @@ definitions:
     - email
     - password
     type: object
+  main.ProfileUserResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      username:
+        type: string
+    type: object
   main.RegisterPayload:
     properties:
       email:
@@ -1416,6 +1425,30 @@ paths:
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
       summary: Activate user
+      tags:
+      - Users
+  /users/profile:
+    get:
+      description: Profile user after login
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/main.ProfileUserResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
+      summary: Profile user
       tags:
       - Users
   /villas:

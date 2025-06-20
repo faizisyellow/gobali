@@ -95,6 +95,7 @@ func (app *application) mount() http.Handler {
 			r.Get("/health", app.healthHandler)
 
 			r.Route("/users", func(r chi.Router) {
+				r.Get("/profile", app.ProfileUser)
 				r.Post("/", app.CreateUserHandler)
 			})
 
