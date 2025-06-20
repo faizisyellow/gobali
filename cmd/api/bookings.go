@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/faizisyellow/gobali/internal/repository"
 	"github.com/go-chi/chi/v5"
@@ -175,6 +176,28 @@ func (app *application) CreateBookingHandler(w http.ResponseWriter, r *http.Requ
 
 	if err := Validate.Struct(payload); err != nil {
 		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	startDate, err := time.Parse(time.DateOnly, payload.StartAt)
+	if err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+
+	if startDate.Before(time.Now()) {
+		app.badRequestResponse(w, r, fmt.Errorf("can not set day before today"))
+		return
+	}
+
+	endDate, err := time.Parse(time.DateOnly, payload.EndAt)
+	if err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+
+	if endDate.Before(startDate) {
+		app.badRequestResponse(w, r, fmt.Errorf("can not set day before starting date"))
 		return
 	}
 
