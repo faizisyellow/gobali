@@ -16,10 +16,19 @@ const rootRoute = createRootRouteWithContext()({
   component: () => <Outlet />,
 });
 
-const indexRoute = createRoute({
+const browseRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/browse",
   component: HomePage,
+  beforeLoad: ({ context }) => {
+    const { role, isLoggedIn } = context.auth;
+
+    if (isLoggedIn && role == "admin") {
+      throw redirect({ to: "/" });
+    }
+    
+    return;
+  },
 });
 
 const loginRoute = createRoute({
@@ -93,7 +102,7 @@ const adminDashboardRoute = createRoute({
 });
 
 const routeTree = rootRoute.addChildren([
-  indexRoute,
+  browseRoute,
   loginRoute,
   userLayoutRoute.addChildren([userDashboardRoute]),
   adminLayoutRoute.addChildren([adminDashboardRoute]),
