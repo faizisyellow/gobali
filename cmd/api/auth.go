@@ -155,10 +155,11 @@ func (app *application) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	claims := jwt.MapClaims{
-		"iss": app.configs.auth.token.iss,
-		"sub": app.configs.auth.token.sub,
-		"exp": app.configs.auth.token.exp,
-		"id":  user.Id,
+		"iss":  app.configs.auth.token.iss,
+		"sub":  app.configs.auth.token.sub,
+		"exp":  app.configs.auth.token.exp,
+		"id":   user.Id,
+		"role": user.Role.Name,
 	}
 
 	signedToken, err := app.authentication.GenerateToken(claims)

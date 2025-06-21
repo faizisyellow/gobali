@@ -110,7 +110,7 @@ func (u *UserRepository) CreateWithTx(ctx context.Context, tx *sql.Tx, payload *
 }
 
 func (u *UserRepository) GetUserByEmail(ctx context.Context, email string) (*User, error) {
-	query := `SELECT id,email,password FROM users WHERE email = ? AND is_active = 1`
+	query := `SELECT users.id,users.email,users.password,r.name FROM users JOIN roles r ON users.role_id = r.id WHERE email = ? AND is_active = 1`
 
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
@@ -118,7 +118,7 @@ func (u *UserRepository) GetUserByEmail(ctx context.Context, email string) (*Use
 	row := u.db.QueryRowContext(ctx, query, email)
 
 	user := User{}
-	err := row.Scan(&user.Id, &user.Email, &user.Password.Hash)
+	err := row.Scan(&user.Id, &user.Email, &user.Password.Hash, &user.Role.Name)
 	if err != nil {
 		switch err {
 		case sql.ErrNoRows:
