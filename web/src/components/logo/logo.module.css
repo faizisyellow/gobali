@@ -1,0 +1,10 @@
+@font-face {
+  font-family: 'MontFont';
+  src: url('../../assets/Mont.otf') format('otf');
+}
+
+.localFontText {
+  font-family: 'MontFont', sans-serif;
+  font-style: italic;
+  color: #00ADD8;
+}

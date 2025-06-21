@@ -37,6 +37,7 @@ func (l *LocalUpload) Upload(r *http.Request, grp string, maxMem int64, allowMim
 	filenames := []string{}
 
 	for _, headerFiles := range FileFields {
+		// get one file each fields
 		headerFile := headerFiles[0]
 
 		contentType := headerFile.Header["Content-Type"][0]
