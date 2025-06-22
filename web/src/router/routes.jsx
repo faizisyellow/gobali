@@ -5,12 +5,12 @@ import {
   redirect,
   createRootRouteWithContext,
 } from "@tanstack/react-router";
-import HomePage from "../pages/HomePage";
-import LoginPage from "../pages/LoginPage";
-import UserDashboard from "../pages/UserDashboard";
-import AdminDashboard from "../pages/AdminDashboard";
-import UserLayout from "../layouts/UserLayout";
-import AdminLayout from "../layouts/AdminLayout";
+import HomePage from "../pages/browse/HomePage";
+import LoginPage from "../pages/login/LoginPage";
+import UserDashboard from "../pages/users/UserDashboard";
+import AdminDashboard from "../pages/admin/AdminDashboard";
+import UserLayout from "../layouts/users/UserLayout";
+import AdminLayout from "../layouts/admin/AdminLayout";
 
 const rootRoute = createRootRouteWithContext()({
   component: () => <Outlet />,
@@ -26,7 +26,7 @@ const browseRoute = createRoute({
     if (isLoggedIn && role == "admin") {
       throw redirect({ to: "/" });
     }
-    
+
     return;
   },
 });
