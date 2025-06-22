@@ -1,8 +1,7 @@
 import axios from "axios";
 
-
 const axiosPublic = axios.create({
-baseURL: import.meta.env.VITE_BASE_URL_DEV,
+  baseURL: import.meta.env.VITE_BASE_URL_DEV,
   headers: {
     "Content-Type": "application/json",
   },
@@ -15,11 +14,13 @@ class AxiosQueryPublic {
 
   async login(payload) {
     try {
-      const response = await this?.axios?.post("/v1/authentication/login", payload);
+      const response = await this?.axios?.post(
+        "/v1/authentication/login",
+        payload
+      );
 
       return response;
     } catch (error) {
-
       throw new Error(error); // send the error to the caller
     }
   }
@@ -34,11 +35,7 @@ class AxiosQueryPublic {
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Login failed:", error.response?.data);
-      } else {
-        console.error("Unexpected error:", error);
-      }
+      console.error("Unexpected error while login:", error);
 
       throw new Error(error.message);
     }
@@ -48,4 +45,3 @@ class AxiosQueryPublic {
 const axiosQueryPublic = new AxiosQueryPublic(axiosPublic);
 
 export { axiosQueryPublic };
-

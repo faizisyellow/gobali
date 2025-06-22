@@ -8,7 +8,9 @@ import {
 import HomePage from "../pages/browse/HomePage";
 import LoginPage from "../pages/login/LoginPage";
 import UserDashboard from "../pages/users/UserDashboard";
-import AdminDashboard from "../pages/admin/AdminDashboard";
+import VillaView from "../pages/admin/villa/View";
+import VillaAdd from "../pages/admin/villa/Add";
+import VillaUpdate from "../pages/admin/villa/Update";
 import UserLayout from "../layouts/users/UserLayout";
 import AdminLayout from "../layouts/admin/AdminLayout";
 
@@ -95,17 +97,33 @@ const adminLayoutRoute = createRoute({
   component: AdminLayout,
 });
 
-const adminDashboardRoute = createRoute({
+const villaManagementViewRoute = createRoute({
   getParentRoute: () => adminLayoutRoute,
   path: "/",
-  component: AdminDashboard,
+  component: VillaView,
+});
+
+const villaManagementNewRoute = createRoute({
+  getParentRoute: () => adminLayoutRoute,
+  path: "/villas-management/new",
+  component: VillaView,
+});
+
+const villaManagementUpdateRoute = createRoute({
+  getParentRoute: () => adminLayoutRoute,
+  path: "/villas-management/$id",
+  component: VillaUpdate,
 });
 
 const routeTree = rootRoute.addChildren([
   browseRoute,
   loginRoute,
   userLayoutRoute.addChildren([userDashboardRoute]),
-  adminLayoutRoute.addChildren([adminDashboardRoute]),
+  adminLayoutRoute.addChildren([
+    villaManagementViewRoute,
+    villaManagementNewRoute,
+    villaManagementUpdateRoute,
+  ]),
 ]);
 
 export const router = new Router({
