@@ -9,7 +9,6 @@ import {
   Box,
   Paper,
   Link,
-  InputAdornment,
   Snackbar,
   Alert,
 } from "@mui/material";
@@ -88,7 +87,7 @@ export default function LoginPage() {
             </Box>
 
             <Box component="form" onSubmit={formik.handleSubmit} noValidate>
-              <CustomTextField
+              <TextField
                 fullWidth
                 id="email"
                 name="email"
@@ -102,7 +101,7 @@ export default function LoginPage() {
                 helperText={formik.touched.email && formik.errors.email}
               />
 
-              <CustomTextField
+              <TextField
                 fullWidth
                 id="password"
                 name="password"
@@ -231,35 +230,6 @@ const LoginSubtitle = styled(Typography)(({ theme }) => ({
   fontWeight: 400,
 }));
 
-const CustomTextField = styled(TextField)(({ theme }) => ({
-  marginBottom: theme.spacing(2),
-  "& .MuiOutlinedInput-root": {
-    borderRadius: 0,
-    "& fieldset": {
-      borderColor: "#dee2e6",
-    },
-    "&:hover fieldset": {
-      borderColor: "#212529",
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: "#212529",
-      boxShadow: "none",
-    },
-    "& input": {
-      fontSize: "14px",
-      padding: "12px 14px",
-      [theme.breakpoints.down("sm")]: {
-        fontSize: "16px",
-        padding: "14px 16px",
-      },
-    },
-  },
-  "& .MuiInputLabel-root": {
-    fontWeight: 500,
-    color: "#495057",
-    fontSize: "14px",
-  },
-}));
 
 const LoginButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(2),

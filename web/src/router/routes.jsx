@@ -106,7 +106,7 @@ const villaManagementViewRoute = createRoute({
 const villaManagementNewRoute = createRoute({
   getParentRoute: () => adminLayoutRoute,
   path: "/villas-management/new",
-  component: VillaView,
+  component: VillaAdd,
 });
 
 const villaManagementUpdateRoute = createRoute({
@@ -128,4 +128,4 @@ const routeTree = rootRoute.addChildren([
 
 export const router = new Router({
   routeTree,
-});
+ });

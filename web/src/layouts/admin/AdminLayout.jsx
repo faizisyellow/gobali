@@ -85,7 +85,9 @@ export default function AdminLayout() {
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
+        color="inherit"
         position="fixed"
+        elevation={0}
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
@@ -115,10 +117,14 @@ export default function AdminLayout() {
             </Button>
           </Box>
         </Toolbar>
+        <Divider />
       </AppBar>
       <Box
         component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        sx={{
+          width: { sm: drawerWidth },
+          flexShrink: { sm: 0 },
+        }}
         aria-label="mailbox folders"
       >
         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
