@@ -69,7 +69,7 @@ type Repository struct {
 	Villas interface {
 		CreateVillaWithAmenity(ctx context.Context, payload *Villa) error
 		GetById(ctx context.Context, id int) (*Villa, error)
-		GetVillas(ctx context.Context) ([]*Villa, error)
+		GetVillas(ctx context.Context, pq PaginatedVillaQuery) ([]*Villa, error)
 		Delete(ctx context.Context, id int) error
 		Update(ctx context.Context, villa *Villa) error
 	}

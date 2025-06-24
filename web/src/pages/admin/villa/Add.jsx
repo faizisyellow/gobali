@@ -21,6 +21,7 @@ import * as Yup from "yup";
 import useDebouncedFormikField from "../../../lib/hooks/DebounceFormikField";
 import ImageUploader from "../../../components/upload/Image";
 import { useNavigate } from "@tanstack/react-router";
+import { Bounce, toast } from "react-toastify";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -59,28 +60,11 @@ export default function VillaAdd() {
     amenities: null,
   });
   const [image, setImage] = useState(null);
-  const [errorCreate, setErrorCreate] = useState(null);
-  const [successCreate, setSuccessCreate] = useState(false);
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    vertical: "bottom",
-    horizontal: "right",
-  });
-
-  const { horizontal, vertical } = snackbar;
 
   const navigate = useNavigate();
 
   function handleImage(image) {
     setImage(image);
-  }
-
-  function handleErrorCreateVilla(error) {
-    setErrorCreate(error);
-  }
-
-  function handleCloseSnackBar() {
-    setSnackbar({ ...snackbar, open: false });
   }
 
   const formik = useFormik({
@@ -105,11 +89,33 @@ export default function VillaAdd() {
         const result = await axiosQueryWithAuth.CreateNewVilla(form);
         if (result.status === 201) {
           navigate({ to: "/admin" });
-          setSuccessCreate(true);
+          toast.success("Create Villa Successfull", {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: false,
+            progress: undefined,
+            theme: "colored",
+            type: "success",
+            transition: Bounce,
+          });
         }
       } catch (error) {
         console.log(error);
-        setErrorCreate(error);
+        toast.error("Failed To Create Villa", {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: false,
+          progress: undefined,
+          theme: "colored",
+          type: "error",
+          transition: Bounce,
+        });
       }
     },
   });
@@ -359,38 +365,17 @@ export default function VillaAdd() {
           </Grid>
 
           <Grid size={12}>
-            <ImageUploader
-              handleError={handleErrorCreateVilla}
-              handleImage={handleImage}
-            />
+            <ImageUploader handleImage={handleImage} />
           </Grid>
 
           {/* Submit */}
-          <Grid size={12} sx={{ mt: 5}}>
+          <Grid size={12} sx={{ mt: 5 }}>
             <Button type="submit" variant="contained" color="primary">
               Create Villa
             </Button>
           </Grid>
         </Grid>
       </form>
-
-      {errorCreate && (
-        <Snackbar
-          anchorOrigin={{ vertical, horizontal }}
-          open={open}
-          onClose={handleCloseSnackBar}
-          autoHideDuration={2000}
-        >
-          <Alert
-            onClose={handleCloseSnackBar}
-            severity="error"
-            variant="filled"
-            sx={{ width: "100%" }}
-          >
-            Error While Create Villa
-          </Alert>
-        </Snackbar>
-      )}
     </>
   );
 }

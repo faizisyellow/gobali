@@ -239,7 +239,23 @@ func (app *application) GetVillaByIdHandler(w http.ResponseWriter, r *http.Reque
 // @Router			/villas [get]
 func (app *application) GetVillasHandler(w http.ResponseWriter, r *http.Request) {
 
-	villas, err := app.repository.Villas.GetVillas(r.Context())
+	vq, err := repository.PaginatedVillaQuery{
+		Limit:  5,
+		Offset: 0,
+		Sort:   "asc",
+	}.Parse(r)
+
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	if err := Validate.Struct(vq); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	villas, err := app.repository.Villas.GetVillas(r.Context(), vq)
 	if err != nil {
 		app.internalServerError(w, r, err)
 		return

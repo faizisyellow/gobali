@@ -210,7 +210,7 @@ func (v *VillasRepository) GetById(ctx context.Context, id int) (*Villa, error) 
 	return villa, nil
 }
 
-func (v *VillasRepository) GetVillas(ctx context.Context) ([]*Villa, error) {
+func (v *VillasRepository) GetVillas(ctx context.Context, vq PaginatedVillaQuery) ([]*Villa, error) {
 	query := `
 	SELECT
 		v.id,

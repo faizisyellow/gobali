@@ -85,7 +85,7 @@ export default function AdminLayout() {
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
-        color="inherit"
+        color="default"
         position="fixed"
         elevation={0}
         sx={{

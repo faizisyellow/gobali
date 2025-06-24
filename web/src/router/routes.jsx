@@ -59,7 +59,7 @@ const userLayoutRoute = createRoute({
     const { role, isLoggedIn } = context.auth;
 
     if (!isLoggedIn) {
-      throw redirect({ to: "/login" });
+      throw redirect({ to: "/browse" });
     }
 
     if (role !== "user") {
@@ -128,4 +128,4 @@ const routeTree = rootRoute.addChildren([
 
 export const router = new Router({
   routeTree,
- });
+});

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Box, Button, styled, Typography } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { Bounce, toast } from "react-toastify";
 
-export default function ImageUploader({ handleError, handleImage }) {
+export default function ImageUploader({ handleImage }) {
   const [preview, setPreview] = useState(null);
   const [file, setFile] = useState(null);
 
@@ -13,15 +14,31 @@ export default function ImageUploader({ handleError, handleImage }) {
       reader.onloadend = () => setPreview(reader.result);
       reader.readAsDataURL(selectedFile);
     } else {
-      handleError("only can upload file type image");
       setFile(null);
       setPreview(null);
+      toast.error("Only File Type Image Allowed", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: false,
+        progress: undefined,
+        type:"error",
+        transition: Bounce,
+        theme:"colored"
+      });
     }
   };
 
   function handleFileInputChange(e) {
     const selected = e.target.files[0];
     handleFile(selected);
+  }
+
+  function handleCancel() {
+    setFile(null);
+    setPreview(null);
   }
 
   useEffect(() => {
@@ -34,11 +51,14 @@ export default function ImageUploader({ handleError, handleImage }) {
     <>
       <Box sx={{ border: 2, borderColor: "#dee2e6", padding: 4 }}>
         {preview ? (
-          <img
-            src={preview}
-            alt="upload-preview"
-            style={{ objectFit: "cover", width: "100%" }}
-          />
+          <Box>
+            <img
+              src={preview}
+              alt="upload-preview"
+              style={{ objectFit: "cover", width: "100%" }}
+            />
+            <Button variant="contained" color="warning" onClick={handleCancel} sx={{mt:3}}>Cancel</Button>
+          </Box>
         ) : (
           <Box
             display="flex"
