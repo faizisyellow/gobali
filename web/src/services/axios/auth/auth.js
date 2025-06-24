@@ -1,15 +1,24 @@
 import axios from "axios";
 import { ErrorData } from "../../error/error";
 
-const token = localStorage.getItem("auth_token") || null;
-
 const axiosAuthenticated = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL_DEV,
   headers: {
     "Content-Type": "application/json",
-    Authorization: "Bearer " + token,
   },
 });
+
+axiosAuthenticated.interceptors.request.use(
+  function (config) {
+    const token = localStorage.getItem("auth_token") || null;
+    config.headers.Authorization = "Bearer " + token;
+
+    return config;
+  },
+  function (error) {
+    return Promise.reject(error);
+  }
+);
 
 class AxiosQueryWithAuth {
   constructor(axios) {
@@ -29,6 +38,7 @@ class AxiosQueryWithAuth {
       );
     }
   }
+
   async getAllAmenties() {
     try {
       const response = await this?.axios?.get("/v1/amenities");
@@ -53,6 +63,25 @@ class AxiosQueryWithAuth {
         error?.response?.status,
         "fetching",
         "error while fetching categories"
+      );
+    }
+  }
+
+  async CreateNewVilla(payloads) {
+    try {
+      const response = await this?.axios?.post("/v1/villas", payloads, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      return response
+    } catch (error) {
+      throw new ErrorData(
+        error.message,
+        error?.response?.status,
+        "mutation",
+        "error while create new villa"
       );
     }
   }

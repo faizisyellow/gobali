@@ -138,6 +138,7 @@ export default function AdminLayout() {
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: drawerWidth,
+              backgroundColor: "#f5f5f5",
             },
           }}
           slotProps={{
@@ -155,6 +156,7 @@ export default function AdminLayout() {
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: drawerWidth,
+              backgroundColor: "#f5f5f5",
             },
           }}
           open

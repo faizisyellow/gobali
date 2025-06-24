@@ -9,6 +9,8 @@ import {
   Select,
   TextField,
   Button,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import Section from "../../../components/section/Section";
 import { useEffect, useState } from "react";
@@ -17,6 +19,8 @@ import ErrorPage from "../../../components/error/Error";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import useDebouncedFormikField from "../../../lib/hooks/DebounceFormikField";
+import ImageUploader from "../../../components/upload/Image";
+import { useNavigate } from "@tanstack/react-router";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -54,6 +58,30 @@ export default function VillaAdd() {
     categories: null,
     amenities: null,
   });
+  const [image, setImage] = useState(null);
+  const [errorCreate, setErrorCreate] = useState(null);
+  const [successCreate, setSuccessCreate] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    vertical: "bottom",
+    horizontal: "right",
+  });
+
+  const { horizontal, vertical } = snackbar;
+
+  const navigate = useNavigate();
+
+  function handleImage(image) {
+    setImage(image);
+  }
+
+  function handleErrorCreateVilla(error) {
+    setErrorCreate(error);
+  }
+
+  function handleCloseSnackBar() {
+    setSnackbar({ ...snackbar, open: false });
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -68,8 +96,21 @@ export default function VillaAdd() {
       amenity_id: [],
     },
     validationSchema,
-    onSubmit: (values) => {
-      console.log("Submitted:", values);
+    onSubmit: async (values) => {
+      try {
+        const form = new FormData();
+        form.append("properties", JSON.stringify(values));
+        form.append("thumbnail", image);
+
+        const result = await axiosQueryWithAuth.CreateNewVilla(form);
+        if (result.status === 201) {
+          navigate({ to: "/admin" });
+          setSuccessCreate(true);
+        }
+      } catch (error) {
+        console.log(error);
+        setErrorCreate(error);
+      }
     },
   });
 
@@ -174,6 +215,8 @@ export default function VillaAdd() {
                 value={formik.values.category_id}
                 onChange={formik.handleChange}
                 input={<OutlinedInput label="Category" />}
+                error={formik.touched.name && Boolean(formik.errors.name)}
+                helperText={formik.touched.name && formik.errors.name}
               >
                 {datas.categories.map((cat) => (
                   <MenuItem value={cat.id} key={cat.id}>
@@ -194,6 +237,8 @@ export default function VillaAdd() {
                 value={formik.values.location_id}
                 onChange={formik.handleChange}
                 input={<OutlinedInput label="Location" />}
+                error={formik.touched.name && Boolean(formik.errors.name)}
+                helperText={formik.touched.name && formik.errors.name}
               >
                 {datas.locations.map((loc) => (
                   <MenuItem value={loc.id} key={loc.id}>
@@ -211,6 +256,8 @@ export default function VillaAdd() {
               label="Min Guest"
               name="min_guest"
               type="number"
+              error={formik.touched.name && Boolean(formik.errors.name)}
+              helperText={formik.touched.name && formik.errors.name}
               value={formik.values.min_guest}
               onChange={formik.handleChange}
             />
@@ -225,6 +272,8 @@ export default function VillaAdd() {
               type="number"
               value={formik.values.bedrooms}
               onChange={formik.handleChange}
+              error={formik.touched.name && Boolean(formik.errors.name)}
+              helperText={formik.touched.name && formik.errors.name}
             />
           </Grid>
 
@@ -237,6 +286,8 @@ export default function VillaAdd() {
               type="number"
               value={formik.values.price}
               onChange={formik.handleChange}
+              error={formik.touched.name && Boolean(formik.errors.name)}
+              helperText={formik.touched.name && formik.errors.name}
             />
           </Grid>
 
@@ -249,6 +300,8 @@ export default function VillaAdd() {
               type="number"
               value={formik.values.baths}
               onChange={formik.handleChange}
+              error={formik.touched.name && Boolean(formik.errors.name)}
+              helperText={formik.touched.name && formik.errors.name}
             />
           </Grid>
 
@@ -261,6 +314,8 @@ export default function VillaAdd() {
               label="Description"
               name="description"
               {...descriptionFieldDebounce}
+              error={formik.touched.name && Boolean(formik.errors.name)}
+              helperText={formik.touched.name && formik.errors.name}
             />
           </Grid>
 
@@ -291,6 +346,8 @@ export default function VillaAdd() {
                   </Box>
                 )}
                 MenuProps={MenuProps}
+                error={formik.touched.name && Boolean(formik.errors.name)}
+                helperText={formik.touched.name && formik.errors.name}
               >
                 {datas.amenities.map((am) => (
                   <MenuItem key={am.id} value={am.id}>
@@ -301,14 +358,39 @@ export default function VillaAdd() {
             </FormControl>
           </Grid>
 
+          <Grid size={12}>
+            <ImageUploader
+              handleError={handleErrorCreateVilla}
+              handleImage={handleImage}
+            />
+          </Grid>
+
           {/* Submit */}
-          <Grid alignItems={"flex-end"}>
+          <Grid size={12} sx={{ mt: 5}}>
             <Button type="submit" variant="contained" color="primary">
-              Submit Villa
+              Create Villa
             </Button>
           </Grid>
         </Grid>
       </form>
+
+      {errorCreate && (
+        <Snackbar
+          anchorOrigin={{ vertical, horizontal }}
+          open={open}
+          onClose={handleCloseSnackBar}
+          autoHideDuration={2000}
+        >
+          <Alert
+            onClose={handleCloseSnackBar}
+            severity="error"
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            Error While Create Villa
+          </Alert>
+        </Snackbar>
+      )}
     </>
   );
 }

@@ -137,7 +137,7 @@ func (app *application) CreateVillaHandler(w http.ResponseWriter, r *http.Reques
 		}
 
 		switch err {
-		case repository.ErrCatOrLocNotExist, repository.ErrDuplicateAmenities, repository.ErrAmenitiesNotExist:
+		case repository.ErrCatOrLocNotExist, repository.ErrDuplicateAmenities, repository.ErrAmenitiesNotExist, repository.ErrDuplicateVilla:
 			app.badRequestResponse(w, r, err)
 		default:
 			app.internalServerError(w, r, err)

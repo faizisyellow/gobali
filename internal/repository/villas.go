@@ -57,10 +57,13 @@ func (v *VillasRepository) Create(ctx context.Context, tx *sql.Tx, villa *Villa)
 
 	if err != nil {
 		nexist := "Error 1452"
+		duplicate := "Error 1062"
 
 		switch {
 		case strings.Contains(err.Error(), nexist):
 			return 0, ErrCatOrLocNotExist
+		case strings.Contains(err.Error(), duplicate):
+			return 0, ErrDuplicateVilla
 		default:
 			return 0, err
 		}

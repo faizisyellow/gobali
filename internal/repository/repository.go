@@ -18,6 +18,7 @@ var (
 	ErrTypeNotExist          = errors.New("type not exist")
 	ErrCatOrLocNotExist      = errors.New("category or location not exist")
 	ErrNoRows                = errors.New("records not found")
+	ErrDuplicateVilla        = errors.New("villa already exist")
 	QueryTimeoutDuration     = 5 * time.Second
 )
 
