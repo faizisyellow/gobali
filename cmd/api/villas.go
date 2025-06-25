@@ -234,8 +234,11 @@ func (app *application) GetVillaByIdHandler(w http.ResponseWriter, r *http.Reque
 // @Description	Get All Villas
 // @Tags			Villas
 // @Produce		json
-// @Success		200	{object}	main.jsonResponse.envelope{data=[]repository.Villa}
-// @Failure		500	{object}	main.WriteJSONError.envelope
+// @Param			limit	query		string	false	"limit each page"
+// @Param			offset	query		string	false	"skip rows"
+// @Param			sort	query		string	false	"sort villa latest(desc), older(asc)"
+// @Success		200		{object}	main.jsonResponse.envelope{data=[]repository.Villa}
+// @Failure		500		{object}	main.WriteJSONError.envelope
 // @Router			/villas [get]
 func (app *application) GetVillasHandler(w http.ResponseWriter, r *http.Request) {
 

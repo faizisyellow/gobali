@@ -199,9 +199,6 @@ func (v *VillasRepository) GetById(ctx context.Context, id int) (*Villa, error) 
 		}
 	}
 
-	// TODO: FIX UNEXPECTED UNMARSHAL
-	log.Info(villa, "sup", "asdsad")
-
 	err = json.Unmarshal(rowUrls, &villa.ImageUrls)
 	if err != nil {
 		return nil, err
@@ -212,36 +209,50 @@ func (v *VillasRepository) GetById(ctx context.Context, id int) (*Villa, error) 
 
 func (v *VillasRepository) GetVillas(ctx context.Context, vq PaginatedVillaQuery) ([]*Villa, error) {
 	query := `
-	SELECT
+	SELECT 
 		v.id,
 		v.name,
 		v.description,
-		v.category_id,
-		v.location_id,
 		v.min_guest,
 		v.bedrooms,
 		v.baths,
 		v.price,
 		v.image_urls,
-		c.id,
-		c.name,
-		l.id,
-		l.area,
-		a.id,
-		a.name as amenity_name,
-		t.name as type_amenity,
+		cat.id,
+		cat.name,
+		loc.id,
+		loc.area,
+		am.id,
+		am.name,
+		tp.name,
 		v.created_at,
 		v.updated_at
 	FROM
-    	villas v LEFT JOIN categories c ON v.category_id = c.id LEFT JOIN locations l ON v.location_id = l.id
-		LEFT JOIN villas_amenities va ON v.id = va.villa_id LEFT JOIN amenities a ON va.amenity_id = a.id
-		LEFT JOIN types t ON t.id = a.type_id
+		(SELECT 
+			id,
+			created_at
+		FROM
+			villas
+		ORDER BY created_at ` + vq.Sort + `, id asc
+		LIMIT ? OFFSET ?) AS pg
+			JOIN
+		villas v ON pg.id = v.id
+			LEFT JOIN
+		categories cat ON cat.id = v.category_id
+			LEFT JOIN
+		locations loc ON v.location_id = loc.id
+			LEFT JOIN
+		villas_amenities ON v.id = villas_amenities.villa_id
+			LEFT JOIN
+		amenities am ON am.id = villas_amenities.amenity_id
+			LEFT JOIN
+		types tp ON tp.id = am.type_id;
 		`
 
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	rows, err := v.db.QueryContext(ctx, query)
+	rows, err := v.db.QueryContext(ctx, query, vq.Limit, vq.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -262,8 +273,6 @@ func (v *VillasRepository) GetVillas(ctx context.Context, vq PaginatedVillaQuery
 			&villa.Id,
 			&villa.Name,
 			&villa.Description,
-			&villa.CategoryId,
-			&villa.LocationId,
 			&villa.MinGuest,
 			&villa.Bedrooms,
 			&villa.Baths,

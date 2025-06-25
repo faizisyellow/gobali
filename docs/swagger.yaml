@@ -1454,6 +1454,19 @@ paths:
   /villas:
     get:
       description: Get All Villas
+      parameters:
+      - description: limit each page
+        in: query
+        name: limit
+        type: string
+      - description: skip rows
+        in: query
+        name: offset
+        type: string
+      - description: sort villa latest(desc), older(asc)
+        in: query
+        name: sort
+        type: string
       produces:
       - application/json
       responses:

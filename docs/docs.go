@@ -1842,6 +1842,26 @@ const docTemplate = `{
                     "Villas"
                 ],
                 "summary": "Get Villa",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "limit each page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "skip rows",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "sort villa latest(desc), older(asc)",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
