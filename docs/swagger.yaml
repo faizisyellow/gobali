@@ -1467,6 +1467,22 @@ paths:
         in: query
         name: sort
         type: string
+      - description: location villa
+        in: query
+        name: location
+        type: string
+      - description: category villa
+        in: query
+        name: category
+        type: string
+      - description: bedrooms villa
+        in: query
+        name: bedrooms
+        type: string
+      - description: min guest villa
+        in: query
+        name: min_guest
+        type: string
       produces:
       - application/json
       responses:

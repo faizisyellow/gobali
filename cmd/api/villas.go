@@ -234,18 +234,26 @@ func (app *application) GetVillaByIdHandler(w http.ResponseWriter, r *http.Reque
 // @Description	Get All Villas
 // @Tags			Villas
 // @Produce		json
-// @Param			limit	query		string	false	"limit each page"
-// @Param			offset	query		string	false	"skip rows"
-// @Param			sort	query		string	false	"sort villa latest(desc), older(asc)"
-// @Success		200		{object}	main.jsonResponse.envelope{data=[]repository.Villa}
-// @Failure		500		{object}	main.WriteJSONError.envelope
+// @Param			limit		query		string	false	"limit each page"
+// @Param			offset		query		string	false	"skip rows"
+// @Param			sort		query		string	false	"sort villa latest(desc), older(asc)"
+// @Param			location	query		string	false	"location villa"
+// @Param			category	query		string	false	"category villa"
+// @Param			bedrooms	query		string	false	"bedrooms villa"
+// @Param			min_guest	query		string	false	"min guest villa"
+// @Success		200			{object}	main.jsonResponse.envelope{data=[]repository.Villa}
+// @Failure		500			{object}	main.WriteJSONError.envelope
 // @Router			/villas [get]
 func (app *application) GetVillasHandler(w http.ResponseWriter, r *http.Request) {
 
 	vq, err := repository.PaginatedVillaQuery{
-		Limit:  5,
-		Offset: 0,
-		Sort:   "asc",
+		Limit:    5,
+		Offset:   0,
+		Sort:     "asc",
+		Location: "",
+		Category: "",
+		MinGuest: "",
+		Bedrooms: "",
 	}.Parse(r)
 
 	if err != nil {

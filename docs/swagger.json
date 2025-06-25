@@ -1857,6 +1857,30 @@
                         "description": "sort villa latest(desc), older(asc)",
                         "name": "sort",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "location villa",
+                        "name": "location",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "category villa",
+                        "name": "category",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "bedrooms villa",
+                        "name": "bedrooms",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "min guest villa",
+                        "name": "min_guest",
+                        "in": "query"
                     }
                 ],
                 "responses": {

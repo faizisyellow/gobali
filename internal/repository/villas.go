@@ -233,7 +233,7 @@ func (v *VillasRepository) GetVillas(ctx context.Context, vq PaginatedVillaQuery
 			created_at
 		FROM
 			villas
-		ORDER BY created_at ` + vq.Sort + `, id asc
+		ORDER BY created_at ` + vq.Sort + `
 		LIMIT ? OFFSET ?) AS pg
 			JOIN
 		villas v ON pg.id = v.id
@@ -246,13 +246,18 @@ func (v *VillasRepository) GetVillas(ctx context.Context, vq PaginatedVillaQuery
 			LEFT JOIN
 		amenities am ON am.id = villas_amenities.amenity_id
 			LEFT JOIN
-		types tp ON tp.id = am.type_id;
+		types tp ON tp.id = am.type_id
+	WHERE
+    loc.area LIKE concat("%",?,"%")
+        AND cat.name LIKE concat("%",?,"%") 
+        AND v.bedrooms LIKE concat("%",?,"%")
+        AND v.min_guest LIKE concat("%",?,"%");
 		`
 
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	rows, err := v.db.QueryContext(ctx, query, vq.Limit, vq.Offset)
+	rows, err := v.db.QueryContext(ctx, query, vq.Limit, vq.Offset, vq.Location, vq.Category, vq.Bedrooms, vq.MinGuest)
 	if err != nil {
 		return nil, err
 	}
