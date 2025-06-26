@@ -6,7 +6,6 @@ import {
   Grid,
   Button,
   Box,
-  Badge,
   Tooltip,
   Chip,
 } from "@mui/material";
@@ -27,11 +26,9 @@ export default function VillaCard({ content }) {
         <CardMedia
           component="img"
           height="200"
-          image={
-            import.meta.env.VITE_BASE_URL_DEV +
-            "/files/villas/" +
+          image={`${import.meta.env.VITE_BASE_URL_DEV}/files/villas/${
             content?.image_urls[0]
-          }
+          }`}
           alt="Villa Image"
         />
         <Box position="absolute" bottom={8} left={16}>
@@ -39,7 +36,7 @@ export default function VillaCard({ content }) {
             icon={<LocationOnIcon fontSize="small" />}
             label={content?.location?.area}
             size="small"
-            color="success"
+            color="primary"
           />
         </Box>
       </Box>
@@ -51,9 +48,9 @@ export default function VillaCard({ content }) {
         </Typography>
 
         {/* Category Badge */}
-        <Box mb={2} mx={4}>
+        <Box mb={2}>
           <Tooltip title="Villa Category">
-            <Badge badgeContent={content?.category.name} color="primary" />
+            <Chip label={content?.category.name} color="secondary" />
           </Tooltip>
         </Box>
 
@@ -81,7 +78,9 @@ export default function VillaCard({ content }) {
 
         {/* Price and Button */}
         <Grid container justifyContent="space-between" alignItems="center">
-          <Typography variant="subtitle1">${content?.price} / Night</Typography>
+          <Typography variant="subtitle1" fontWeight={500}>
+            ${content?.price} / Night
+          </Typography>
           <Button variant="outlined">Show Details</Button>
         </Grid>
       </CardContent>

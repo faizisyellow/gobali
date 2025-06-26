@@ -90,9 +90,8 @@ class AxiosQueryWithAuth {
   async GetAllVillas(query) {
     try {
       const response = await this.axios.get(
-        `/v1/villas?location=${query.location ?? ""}&category=${
-          query.category ?? ""
-        }&min_guest=${query.minGuest ?? ""}&bedrooms=${query.bedrooms ?? ""}`
+        `/v1/villas?location=${query.location ?? ""}&category=${query.category ?? ""}&min_guest=${query.minGuest ?? ""}&bedrooms=${query.bedrooms ?? ""}&limit=${query.limit ?? 6}&offset=${query.offset ?? 0}
+        `
       );
       return response;
     } catch (error) {

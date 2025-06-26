@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import VillaCard from "../villa-card/VillaCard";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { axiosQueryWithAuth } from "../../services/axios/auth/auth";
 
 const locations = ["Canggu", "Ubud", "Seminyak", "Nusa Penida"];
@@ -23,6 +23,12 @@ export default function Villas() {
   const [minGuest, setMinGuest] = useState("");
   const [bedrooms, setBedrooms] = useState("");
   const [villas, setVillas] = useState([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true); // ✅ new
+
+  const limit = 6;
+  const offset = (page - 1) * limit;
+  const villaTopRef = useRef(null);
 
   useEffect(() => {
     async function fetch() {
@@ -31,21 +37,32 @@ export default function Villas() {
           location,
           category,
           minGuest,
-          bedrooms
+          bedrooms,
+          limit,
+          offset,
         };
 
         const result = await axiosQueryWithAuth.GetAllVillas(query);
-        const data = result?.data?.data;
-        if (Array.isArray(data)) {
-          setVillas(data);
+        const data = result?.data?.data || [];
+
+        if (page === 1) {
+          setVillas(data); // reset list on new filter
+        } else {
+          setVillas((prev) => [...prev, ...data]); // append new data
         }
+
+        setHasMore(data.length === limit); // ✅ stop if less than limit
       } catch (error) {
         console.log(error);
       }
     }
 
     fetch();
-  }, [location, category,minGuest,bedrooms]);
+  }, [location, category, minGuest, bedrooms, page]);
+
+  useEffect(() => {
+    setPage(1); // ✅ reset to first page when filters change
+  }, [location, category, minGuest, bedrooms]);
 
   return (
     <>
@@ -162,13 +179,26 @@ export default function Villas() {
         </Grid>
       </Grid>
 
-      <Grid container spacing={4}>
+      <Grid container spacing={4} ref={villaTopRef}>
         {villas.map((villa, index) => (
-          <Grid size={{ sm: 12, md: 4 }} key={index}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
             <VillaCard content={villa} />
           </Grid>
         ))}
       </Grid>
+
+      {hasMore && (
+        <Box display="flex" justifyContent="center" mt={4}>
+          <button
+            onClick={() => {
+              setPage((prev) => prev + 1);
+              villaTopRef.current?.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            Load More
+          </button>
+        </Box>
+      )}
     </>
   );
 }
