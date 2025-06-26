@@ -109,14 +109,16 @@ func (b *BookingsRepository) GetById(ctx context.Context, id int) (*Booking, err
 	return &booking, nil
 }
 
-func (b *BookingsRepository) GetBookings(ctx context.Context) ([]*Booking, error) {
+func (b *BookingsRepository) GetBookings(ctx context.Context, pq PaginatedBookingsQuery) ([]*Booking, error) {
 	query := `SELECT id,first_name,last_name,status,villa_name,villa_price,villa_location,total_price,
-	start_at,end_at,email,guest,villa_id,user_id,created_at,updated_at FROM bookings`
+	start_at,end_at,email,guest,villa_id,user_id,created_at,updated_at FROM bookings
+	ORDER BY created_at ` + pq.Sort + ` LIMIT ? OFFSET ?
+	`
 
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	rows, err := b.db.QueryContext(ctx, query)
+	rows, err := b.db.QueryContext(ctx, query, pq.Limit, pq.Offset)
 	if err != nil {
 		return nil, err
 	}

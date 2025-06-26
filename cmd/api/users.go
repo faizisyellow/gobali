@@ -18,17 +18,17 @@ type ProfileUserResponse struct {
 	Username, Email string
 }
 
-//	@Summary		Create user
-//	@Description	Create user
-//	@Tags			Users
-//	@Accept			json
-//	@Produce		json
-//	@Param			payload	body	CreateUserPayload	true	"Payload create user"
-//	@Security		JWT
-//	@Success		201	{object}	main.jsonResponse.envelope{data=string}
-//	@Failure		404	{object}	main.WriteJSONError.envelope
-//	@Failure		500	{object}	main.WriteJSONError.envelope
-//	@Router			/users [POST]
+// @Summary		Create user
+// @Description	Create user
+// @Tags			Users
+// @Accept			json
+// @Produce		json
+// @Param			payload	body	CreateUserPayload	true	"Payload create user"
+// @Security		JWT
+// @Success		201	{object}	main.jsonResponse.envelope{data=string}
+// @Failure		404	{object}	main.WriteJSONError.envelope
+// @Failure		500	{object}	main.WriteJSONError.envelope
+// @Router			/users [POST]
 func (app *application) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	userPayload := &CreateUserPayload{}
 
@@ -64,14 +64,14 @@ func (app *application) CreateUserHandler(w http.ResponseWriter, r *http.Request
 	}
 }
 
-//	@Summary		Activate user
-//	@Description	Activate user after register account
-//	@Tags			Users
-//	@Produce		json
-//	@Param			token	path		string	true	"token activation"
-//	@Success		201		{object}	main.jsonResponse.envelope{data=string}
-//	@Failure		500		{object}	main.WriteJSONError.envelope
-//	@Router			/users/activate/{token} [PUT]
+// @Summary		Activate user
+// @Description	Activate user after register account
+// @Tags			Users
+// @Produce		json
+// @Param			token	path		string	true	"token activation"
+// @Success		201		{object}	main.jsonResponse.envelope{data=string}
+// @Failure		500		{object}	main.WriteJSONError.envelope
+// @Router			/users/activate/{token} [PUT]
 func (app *application) ActivateUserHandler(w http.ResponseWriter, r *http.Request) {
 	inviteToken := chi.URLParam(r, "token")
 
@@ -88,14 +88,14 @@ func (app *application) ActivateUserHandler(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-//	@Summary		Profile user
-//	@Description	Profile user after login
-//	@Tags			Users
-//	@Produce		json
-//	@Security		JWT
-//	@Success		200	{object}	main.jsonResponse.envelope{data=ProfileUserResponse}
-//	@Failure		500	{object}	main.WriteJSONError.envelope
-//	@Router			/users/profile [get]
+// @Summary		Profile user
+// @Description	Profile user after login
+// @Tags			Users
+// @Produce		json
+// @Security		JWT
+// @Success		200	{object}	main.jsonResponse.envelope{data=ProfileUserResponse}
+// @Failure		500	{object}	main.WriteJSONError.envelope
+// @Router			/users/profile [get]
 func (app *application) ProfileUser(w http.ResponseWriter, r *http.Request) {
 	user := getUserFromContext(r)
 
@@ -110,6 +110,19 @@ func (app *application) ProfileUser(w http.ResponseWriter, r *http.Request) {
 		app.internalServerError(w, r, err)
 		return
 	}
+}
+
+// TODO: handle get bookings's user
+
+// @Summary		 User's Bookings
+// @Description	Get all User's Bookings
+// @Tags			Users
+// @Produce		json
+// @Success		200		{object}	main.jsonResponse.envelope{data=repository.User}
+// @Failure		500		{object}	main.WriteJSONError.envelope
+// @Router			/users/activate/{token} [PUT]
+func (app *application) UserBookings(w http.ResponseWriter, r *http.Request) {
+
 }
 
 func getUserFromContext(r *http.Request) *repository.User {

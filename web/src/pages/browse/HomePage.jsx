@@ -1,11 +1,15 @@
-import { Header} from "../../components/header/Header";
+import { Box, Grid } from "@mui/material";
+import { Header } from "../../components/header/Header";
+import VillaCard from "../../components/villa-card/VillaCard";
+import Villas from "../../components/villas/Villas";
 
 export default function HomePage() {
   return (
     <>
       <Header />
-
-      <h1>Home (Public)</h1>
+      <Box m={4}>
+        <Villas />
+      </Box>
     </>
   );
 }

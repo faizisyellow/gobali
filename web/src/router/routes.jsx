@@ -66,6 +66,11 @@ const userLayoutRoute = createRoute({
       throw redirect({ to: role === "admin" ? "/admin" : "/browse" });
     }
 
+    if (role === "user" && isLoggedIn) {
+      throw redirect({to:"/browse"})
+      
+    }
+
     return;
   },
   component: UserLayout,

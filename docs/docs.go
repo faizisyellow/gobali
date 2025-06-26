@@ -39,6 +39,26 @@ const docTemplate = `{
                     "Amenities"
                 ],
                 "summary": "Get Amenities",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "limit pages",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "skip rows",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "sort latest(desc) older(asc)",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -799,6 +819,26 @@ const docTemplate = `{
                     "Categories"
                 ],
                 "summary": "Get categories",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "limit pages",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "skip rows",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "sort latest(desc) older(asc)",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1122,6 +1162,26 @@ const docTemplate = `{
                     "Locations"
                 ],
                 "summary": "Get locations",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "limit pages",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "skip rows",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "sort latest(desc) older(asc)",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

@@ -377,6 +377,19 @@ paths:
   /amenities:
     get:
       description: Get all Amenities
+      parameters:
+      - description: limit pages
+        in: query
+        name: limit
+        type: string
+      - description: skip rows
+        in: query
+        name: offset
+        type: string
+      - description: sort latest(desc) older(asc)
+        in: query
+        name: sort
+        type: string
       produces:
       - application/json
       responses:
@@ -832,6 +845,19 @@ paths:
   /categories:
     get:
       description: Get all categories
+      parameters:
+      - description: limit pages
+        in: query
+        name: limit
+        type: string
+      - description: skip rows
+        in: query
+        name: offset
+        type: string
+      - description: sort latest(desc) older(asc)
+        in: query
+        name: sort
+        type: string
       produces:
       - application/json
       responses:
@@ -1023,6 +1049,19 @@ paths:
   /locations:
     get:
       description: Get All Locations
+      parameters:
+      - description: limit pages
+        in: query
+        name: limit
+        type: string
+      - description: skip rows
+        in: query
+        name: offset
+        type: string
+      - description: sort latest(desc) older(asc)
+        in: query
+        name: sort
+        type: string
       produces:
       - application/json
       responses:

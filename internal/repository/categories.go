@@ -63,13 +63,13 @@ func (c *CategoriesRepository) GetByID(ctx context.Context, id int) (*Category, 
 	return cat, nil
 }
 
-func (c *CategoriesRepository) GetCategories(ctx context.Context) ([]*Category, error) {
-	query := `SELECT id, name, created_at FROM categories`
+func (c *CategoriesRepository) GetCategories(ctx context.Context, qp PaginatedCategoriesQuery) ([]*Category, error) {
+	query := `SELECT id, name, created_at FROM categories ORDER BY created_at ` + qp.Sort + ` LIMIT ? OFFSET ?`
 
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	rows, err := c.db.QueryContext(ctx, query)
+	rows, err := c.db.QueryContext(ctx, query, qp.Limit, qp.Offset)
 	if err != nil {
 		return nil, err
 	}

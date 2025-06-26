@@ -41,14 +41,14 @@ type Repository struct {
 	Categories interface {
 		Create(ctx context.Context, name string) error
 		GetByID(ctx context.Context, id int) (*Category, error)
-		GetCategories(ctx context.Context) ([]*Category, error)
+		GetCategories(ctx context.Context, query PaginatedCategoriesQuery) ([]*Category, error)
 		Update(ctx context.Context, category *Category) error
 		Delete(ctx context.Context, id int) error
 	}
 	Location interface {
 		Create(ctx context.Context, area string) error
 		GetByID(ctx context.Context, id int) (*Location, error)
-		GetLocations(ctx context.Context) ([]*Location, error)
+		GetLocations(ctx context.Context, query PaginatedLocationQuery) ([]*Location, error)
 		Update(ctx context.Context, location *Location) error
 		Delete(ctx context.Context, id int) error
 	}
@@ -62,7 +62,7 @@ type Repository struct {
 	Amenities interface {
 		Create(ctx context.Context, name string, typeID int) error
 		GetByID(ctx context.Context, id int) (*Amenity, error)
-		GetAmenities(ctx context.Context) ([]*Amenity, error)
+		GetAmenities(ctx context.Context, query PaginatedAmenitiesQuery) ([]*Amenity, error)
 		Update(ctx context.Context, Amenity *Amenity) error
 		Delete(ctx context.Context, id int) error
 	}
@@ -77,7 +77,7 @@ type Repository struct {
 		UpdateBookingStatus(ctx context.Context, bookId int, status string) error
 		Create(context.Context, *Booking) error
 		GetById(context.Context, int) (*Booking, error)
-		GetBookings(context.Context) ([]*Booking, error)
+		GetBookings(context.Context, PaginatedBookingsQuery) ([]*Booking, error)
 		Delete(context.Context, int) error
 		GetBookingVillaByDate(ctx context.Context, startAt, endAt string, villaId int) (*Booking, error)
 	}

@@ -28,6 +28,15 @@ func (app *application) UploadImagesMiddleware(next http.HandlerFunc, dst string
 
 		var maxMem int64 = 3 * 1024 * 1024 // 3 mb
 
+		r.ParseMultipartForm(maxMem)
+
+		fileFields := r.MultipartForm.File
+
+		if len(fileFields) == 0 {
+			app.badRequestResponse(w, r, fmt.Errorf("image file required"))
+			return
+		}
+
 		filenames, err := app.upload.Upload(r, dst, maxMem, allowMime)
 		if err != nil {
 			switch err {

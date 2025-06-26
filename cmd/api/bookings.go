@@ -250,12 +250,29 @@ func (app *application) CreateBookingHandler(w http.ResponseWriter, r *http.Requ
 // @Produce		json
 // @Accept			json
 // @Security		JWT
+//
+//	@Param			limit	query		string	false	"limit pages"
+//	@Param			offset	query		string	false	"skip rows"
+//
+// @Param			sort	query		string	false	"sort latest(desc) older(asc)"
+//
 // @Success		200	{object}	main.jsonResponse.envelope{data=[]repository.Booking}
 // @Failure		500	{object}	main.WriteJSONError.envelope
 // @Router			/bookings [get]
 func (app *application) GetBookingsHandler(w http.ResponseWriter, r *http.Request) {
 
-	bookings, err := app.repository.Bookings.GetBookings(r.Context())
+	query, err := repository.PaginatedBookingsQuery{
+		Limit:  5,
+		Offset: 0,
+		Sort:   "asc",
+	}.Parse(r)
+
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	bookings, err := app.repository.Bookings.GetBookings(r.Context(), query)
 	if err != nil {
 		app.internalServerError(w, r, err)
 		return

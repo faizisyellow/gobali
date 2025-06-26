@@ -70,13 +70,15 @@ func (a *AmenitiesRepository) GetByID(ctx context.Context, id int) (*Amenity, er
 	return am, nil
 }
 
-func (a *AmenitiesRepository) GetAmenities(ctx context.Context) ([]*Amenity, error) {
-	query := `SELECT a.id, a.name, a.type_id, t.name, a.created_at FROM amenities a LEFT JOIN types t ON a.type_id = t.id `
+func (a *AmenitiesRepository) GetAmenities(ctx context.Context, qp PaginatedAmenitiesQuery) ([]*Amenity, error) {
+	query := `SELECT a.id, a.name, a.type_id, t.name, a.created_at FROM amenities a LEFT JOIN types t ON a.type_id = t.id
+	ORDER BY a.created_at ` + qp.Sort + ` LIMIT ? OFFSET ? 
+	`
 
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	rows, err := a.db.QueryContext(ctx, query)
+	rows, err := a.db.QueryContext(ctx, query, qp.Limit, qp.Offset)
 	if err != nil {
 		return nil, err
 	}

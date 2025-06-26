@@ -25,6 +25,7 @@ type User struct {
 	Role      Role         `json:"role"`
 	CreatedAt string       `json:"created_at"`
 	UpdateAt  string       `json:"update_at"`
+	Bookings  []Booking    `json:"bookings"`
 }
 
 type HashPassword struct {
@@ -300,4 +301,23 @@ func (u *UserRepository) Activate(ctx context.Context, token string) error {
 
 		return nil
 	})
+}
+
+// TODO: populate the user with their bookings villa
+func (u *UserRepository) GetUserBookings(ctx context.Context, userId int, pq PaginatedUserBookingsQuery) (*User, error) {
+	query := `
+	SELECT u.id,u.email,b.villa_name,b.status b.total_price b.created_at FROM users u LEFT JOIN bookings b ON b.user_id = u.id
+	ORDER BY b.created_at ` + pq.Sort + ` LIMIT ? OFFSET ?
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
+
+	_, err := u.db.ExecContext(ctx, query, pq.Limit, pq.Offset)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+
 }

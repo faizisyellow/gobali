@@ -28,7 +28,7 @@ func (l *LocalUpload) Upload(r *http.Request, grp string, maxMem int64, allowMim
 
 	FileFields := r.MultipartForm.File
 
-	if r.Method == "PUT" && FileFields == nil {
+	if r.Method == "PUT" && len(FileFields) == 0 {
 		return nil, nil
 	}
 

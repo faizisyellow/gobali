@@ -62,13 +62,13 @@ func (l *LocationsRepository) GetByID(ctx context.Context, id int) (*Location, e
 	return location, nil
 }
 
-func (l *LocationsRepository) GetLocations(ctx context.Context) ([]*Location, error) {
-	query := `SELECT id, area, created_at, updated_at FROM locations`
+func (l *LocationsRepository) GetLocations(ctx context.Context, qp PaginatedLocationQuery) ([]*Location, error) {
+	query := `SELECT id, area, created_at, updated_at FROM locations ORDER BY created_at ` + qp.Sort + ` LIMIT ? OFFSET ?`
 
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	rows, err := l.db.QueryContext(ctx, query)
+	rows, err := l.db.QueryContext(ctx, query, qp.Limit, qp.Offset)
 	if err != nil {
 		return nil, err
 	}

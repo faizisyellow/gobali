@@ -108,12 +108,29 @@ func (app *application) GetLocationByIdHandler(w http.ResponseWriter, r *http.Re
 //	@Tags			Locations
 //	@Produce		json
 //	@Security		JWT
-//	@Success		200	{object}	main.jsonResponse.envelope{data=[]LocationResponse{}}
-//	@Failure		500	{object}	main.WriteJSONError.envelope
+//
+//	@Param			limit	query		string	false	"limit pages"
+//	@Param			offset	query		string	false	"skip rows"
+//
+//	@Param			sort	query		string	false	"sort latest(desc) older(asc)"
+//
+//	@Success		200		{object}	main.jsonResponse.envelope{data=[]LocationResponse{}}
+//	@Failure		500		{object}	main.WriteJSONError.envelope
 //	@Router			/locations [get]
 func (app *application) GetLocationsHandler(w http.ResponseWriter, r *http.Request) {
 
-	location, err := app.repository.Location.GetLocations(r.Context())
+	query, err := repository.PaginatedLocationQuery{
+		Limit:  10,
+		Offset: 0,
+		Sort:   "asc",
+	}.Parse(r)
+
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	location, err := app.repository.Location.GetLocations(r.Context(), query)
 	if err != nil {
 		app.internalServerError(w, r, err)
 		return

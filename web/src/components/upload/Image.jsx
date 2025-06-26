@@ -13,7 +13,7 @@ export default function ImageUploader({ handleImage }) {
       const reader = new FileReader();
       reader.onloadend = () => setPreview(reader.result);
       reader.readAsDataURL(selectedFile);
-    } else {
+    } else if (selectedFile && !selectedFile.type.startsWith("image/")) {
       setFile(null);
       setPreview(null);
       toast.error("Only File Type Image Allowed", {
@@ -24,9 +24,9 @@ export default function ImageUploader({ handleImage }) {
         pauseOnHover: true,
         draggable: false,
         progress: undefined,
-        type:"error",
+        type: "error",
         transition: Bounce,
-        theme:"colored"
+        theme: "colored",
       });
     }
   };
@@ -57,7 +57,14 @@ export default function ImageUploader({ handleImage }) {
               alt="upload-preview"
               style={{ objectFit: "cover", width: "100%" }}
             />
-            <Button variant="contained" color="warning" onClick={handleCancel} sx={{mt:3}}>Cancel</Button>
+            <Button
+              variant="contained"
+              color="warning"
+              onClick={handleCancel}
+              sx={{ mt: 3 }}
+            >
+              Cancel
+            </Button>
           </Box>
         ) : (
           <Box

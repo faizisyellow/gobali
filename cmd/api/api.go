@@ -5,8 +5,6 @@ import (
 	"errors"
 	"expvar"
 	"fmt"
-	"path/filepath"
-	"strings"
 
 	"net/http"
 	"os"
@@ -107,8 +105,11 @@ func (app *application) mount() http.Handler {
 			r.Get("/health", app.healthHandler)
 
 			r.Route("/users", func(r chi.Router) {
+				// get the user by the who's is login
 				r.Get("/profile", app.ProfileUser)
 				r.Post("/", app.CreateUserHandler)
+
+				r.Route("/bookings", func(r chi.Router) {})
 			})
 
 			r.Route("/categories", func(r chi.Router) {
@@ -186,6 +187,7 @@ func (app *application) mount() http.Handler {
 				r.Route("/{bookingID}", func(r chi.Router) {
 					r.Use(app.BookingContentMiddleware)
 
+					// user can self check-in check-out.
 					r.Get("/", app.BookingAccess("admin", app.GetBookingByIdHandler))
 					r.Patch("/check-in", app.BookingAccess("admin", app.CheckInHandler))
 					r.Patch("/check-out", app.BookingAccess("admin", app.CheckOutHandler))
@@ -218,30 +220,9 @@ func (app *application) mount() http.Handler {
 
 	// Create a route along /files that will serve contents from
 	// the ./data/ folder.
-	workDir, _ := os.Getwd()
-	filesDir := http.Dir(filepath.Join(workDir, "internal/assets"))
-	FileServer(r, "/files", filesDir)
+	FileServer(r, "/files", "internal/assets")
 
 	return r
-}
-
-func FileServer(r chi.Router, path string, root http.FileSystem) {
-	if strings.ContainsAny(path, "{}*") {
-		panic("FileServer does not permit any URL parameters.")
-	}
-
-	if path != "/" && path[len(path)-1] != '/' {
-		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
-		path += "/"
-	}
-	path += "*"
-
-	r.Get(path, func(w http.ResponseWriter, r *http.Request) {
-		rctx := chi.RouteContext(r.Context())
-		pathPrefix := strings.TrimSuffix(rctx.RoutePattern(), "/*")
-		fs := http.StripPrefix(pathPrefix, http.FileServer(root))
-		fs.ServeHTTP(w, r)
-	})
 }
 
 func (app *application) run(mux http.Handler) error {

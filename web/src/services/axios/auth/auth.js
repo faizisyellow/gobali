@@ -75,7 +75,7 @@ class AxiosQueryWithAuth {
         },
       });
 
-      return response
+      return response;
     } catch (error) {
       throw new ErrorData(
         error.message,
@@ -83,6 +83,20 @@ class AxiosQueryWithAuth {
         "mutation",
         "error while create new villa"
       );
+    }
+  }
+
+  /* GET ALL VILLAS */
+  async GetAllVillas(query) {
+    try {
+      const response = await this.axios.get(
+        `/v1/villas?location=${query.location ?? ""}&category=${
+          query.category ?? ""
+        }&min_guest=${query.minGuest ?? ""}&bedrooms=${query.bedrooms ?? ""}`
+      );
+      return response;
+    } catch (error) {
+      throw new Error(error);
     }
   }
 }

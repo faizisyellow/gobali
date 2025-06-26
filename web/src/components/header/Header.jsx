@@ -10,20 +10,14 @@ import {
 } from "@mui/material";
 import { styled, useMediaQuery, useTheme } from "@mui/system";
 
-const caseStudy = {
-  title: "Discover Your Perfect Bali Villa with Gobali",
-  description:
-    "Experience luxury and tranquility with Gobali — your trusted platform for booking the most stunning villas across Bali. Whether you're planning a romantic getaway, a family vacation, or a solo retreat, Gobali connects you to curated villas that combine comfort, privacy, and authentic Balinese charm.",
-  image:
-    "https://images.unsplash.com/photo-1596178067639-5c6e68aea6dc?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-};
-
 const SlideContainer = styled(Box)(({ theme }) => ({
   width: "100%",
   height: "100vh",
   backgroundSize: "cover",
   backgroundPosition: "center",
-  backgroundImage: `url(${caseStudy.image})`,
+  backgroundImage: `url(
+  https://images.unsplash.com/photo-1688653802629-5360086bf632?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
+)`,
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
@@ -91,7 +85,10 @@ export function Header() {
             }}
             gutterBottom
           >
-            {caseStudy.title}
+            Discover Your Perfect Bali Villa with{" "}
+            <span style={{ fontStyle: "italic", color: "#5DC9E2" }}>
+              Gobali
+            </span>
           </Typography>
           <Typography
             variant="body1"
@@ -100,7 +97,18 @@ export function Header() {
               textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
             }}
           >
-            {caseStudy.description}
+            Experience luxury and tranquility with{" "}
+            <span style={{ fontStyle: "italic", color: "#5DC9E2" }}>
+              Gobali
+            </span>{" "}
+            — your trusted platform for booking the most stunning villas across
+            Bali. Whether you're planning a romantic getaway, a family vacation,
+            or a solo retreat,{" "}
+            <span style={{ fontStyle: "italic", color: "#5DC9E2" }}>
+              Gobali
+            </span>{" "}
+            connects you to curated villas that combine comfort, privacy, and
+            authentic Balinese charm.
           </Typography>
         </TextContent>
       </SlideContainer>
