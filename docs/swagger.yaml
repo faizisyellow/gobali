@@ -285,6 +285,21 @@ definitions:
       updated_at:
         type: string
     type: object
+  repository.Role:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      level:
+        type: integer
+      name:
+        type: string
+      update_at:
+        type: string
+    type: object
   repository.SelectedAmenity:
     properties:
       id:
@@ -322,6 +337,29 @@ definitions:
       name:
         type: string
       updated_at:
+        type: string
+    type: object
+  repository.User:
+    properties:
+      bookings:
+        items:
+          $ref: '#/definitions/repository.Booking'
+        type: array
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      role:
+        $ref: '#/definitions/repository.Role'
+      role_id:
+        type: integer
+      update_at:
+        type: string
+      username:
         type: string
     type: object
   repository.Villa:
@@ -635,6 +673,19 @@ paths:
       consumes:
       - application/json
       description: Get All Bookings
+      parameters:
+      - description: limit pages
+        in: query
+        name: limit
+        type: string
+      - description: skip rows
+        in: query
+        name: offset
+        type: string
+      - description: sort latest(desc) older(asc)
+        in: query
+        name: sort
+        type: string
       produces:
       - application/json
       responses:
@@ -1464,6 +1515,30 @@ paths:
           schema:
             $ref: '#/definitions/main.WriteJSONError.envelope'
       summary: Activate user
+      tags:
+      - Users
+  /users/bookings:
+    get:
+      description: Get all User's Bookings
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/main.jsonResponse.envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/repository.User'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.WriteJSONError.envelope'
+      security:
+      - JWT: []
+      summary: User's Bookings
       tags:
       - Users
   /users/profile:

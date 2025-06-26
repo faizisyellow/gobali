@@ -303,21 +303,45 @@ func (u *UserRepository) Activate(ctx context.Context, token string) error {
 	})
 }
 
-// TODO: populate the user with their bookings villa
 func (u *UserRepository) GetUserBookings(ctx context.Context, userId int, pq PaginatedUserBookingsQuery) (*User, error) {
 	query := `
-	SELECT u.id,u.email,b.villa_name,b.status b.total_price b.created_at FROM users u LEFT JOIN bookings b ON b.user_id = u.id
-	ORDER BY b.created_at ` + pq.Sort + ` LIMIT ? OFFSET ?
+	SELECT u.id,u.email,b.villa_name,b.status, b.total_price, b.created_at,b.start_at,b.end_at FROM users u LEFT JOIN bookings b ON b.user_id = u.id
+	WHERE u.id = ?	ORDER BY b.created_at ` + pq.Sort + ` LIMIT ? OFFSET ?
 	`
 
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	_, err := u.db.ExecContext(ctx, query, pq.Limit, pq.Offset)
+	rows, err := u.db.QueryContext(ctx, query, userId, pq.Limit, pq.Offset)
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
-	return nil, nil
+	user := User{}
+
+	for rows.Next() {
+		booking := Booking{}
+
+		err := rows.Scan(
+			&user.Id,
+			&user.Email,
+			&booking.VillaName,
+			&booking.Status,
+			&booking.TotalPrice,
+			&booking.CreatedAt,
+			&booking.StartAt,
+			&booking.EndAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if user.Id != 0 {
+			user.Bookings = append(user.Bookings, booking)
+		}
+	}
+
+	return &user, nil
 
 }

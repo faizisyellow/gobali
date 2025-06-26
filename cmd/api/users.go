@@ -112,17 +112,39 @@ func (app *application) ProfileUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// TODO: handle get bookings's user
+// TODO: Consider using DTO for response
 
-// @Summary		 User's Bookings
+// @Summary		User's Bookings
 // @Description	Get all User's Bookings
 // @Tags			Users
+// @Security		JWT
 // @Produce		json
-// @Success		200		{object}	main.jsonResponse.envelope{data=repository.User}
-// @Failure		500		{object}	main.WriteJSONError.envelope
-// @Router			/users/activate/{token} [PUT]
-func (app *application) UserBookings(w http.ResponseWriter, r *http.Request) {
+// @Success		200	{object}	main.jsonResponse.envelope{data=repository.User}
+// @Failure		500	{object}	main.WriteJSONError.envelope
+// @Router			/users/bookings [get]
+func (app *application) UserBookingsHandler(w http.ResponseWriter, r *http.Request) {
+	user := getUserFromContext(r)
+	query, err := repository.PaginatedUserBookingsQuery{
+		Limit:  6,
+		Offset: 0,
+		Sort:   "asc",
+	}.Parse(r)
 
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	user, err = app.repository.Users.GetUserBookings(r.Context(), user.Id, query)
+	if err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+
+	if err := app.jsonResponse(w, http.StatusOK, user); err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
 }
 
 func getUserFromContext(r *http.Request) *repository.User {

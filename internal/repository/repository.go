@@ -33,6 +33,7 @@ type Repository struct {
 		UpdateWithTx(ctx context.Context, tx *sql.Tx, user *User) error
 		GetUserByEmail(ctx context.Context, email string) (user *User, err error)
 		GetByID(ctx context.Context, userId int) (*User, error)
+		GetUserBookings(ctx context.Context, userId int, pq PaginatedUserBookingsQuery) (*User, error)
 	}
 	Roles interface {
 		Create(context.Context, *Role) error

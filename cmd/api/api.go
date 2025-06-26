@@ -109,7 +109,7 @@ func (app *application) mount() http.Handler {
 				r.Get("/profile", app.ProfileUser)
 				r.Post("/", app.CreateUserHandler)
 
-				r.Route("/bookings", func(r chi.Router) {})
+				r.Get("/bookings", app.UserBookingsHandler)
 			})
 
 			r.Route("/categories", func(r chi.Router) {
